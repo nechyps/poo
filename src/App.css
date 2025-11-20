@@ -3,84 +3,60 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background: transparent;
-  padding: 24px;
+  background: #f5f5f5;
+  padding: 0;
 }
 
-/* Телефонная рамка */
+/* Телефонная рамка - только на мобильных */
 .phone-frame {
-  width: 375px;
-  height: 812px;
-  background: #1a1a1a;
-  border-radius: 45px;
-  padding: 12px;
-  box-shadow: 
-    0 0 0 3px #2a2a2a,
-    0 0 0 6px #1a1a1a,
-    0 30px 60px rgba(0, 0, 0, 0.4),
-    inset 0 0 6px rgba(255, 255, 255, 0.1);
+  width: 100%;
+  height: 100vh;
+  background: #ffffff;
+  border-radius: 0;
+  padding: 0;
+  box-shadow: none;
   position: relative;
   display: flex;
   flex-direction: column;
 }
 
-/* Вырез (notch) сверху */
+/* Убираем вырез и полоску на desktop */
 .phone-notch {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 180px;
-  height: 30px;
-  background: #1a1a1a;
-  border-radius: 0 0 20px 20px;
-  z-index: 10;
-}
-
-.phone-notch::before {
-  content: '';
-  position: absolute;
-  top: 8px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 60px;
-  height: 6px;
-  background: #333;
-  border-radius: 3px;
-}
-
-.phone-notch::after {
-  content: '';
-  position: absolute;
-  top: 8px;
-  right: 25px;
-  width: 12px;
-  height: 12px;
-  background: #1a3a1a;
-  border-radius: 50%;
-  box-shadow: 0 0 6px rgba(0, 255, 0, 0.3);
+  display: none;
 }
 
 /* Экран телефона */
 .phone-screen {
   flex: 1;
   background: #ffffff;
-  border-radius: 35px;
+  border-radius: 0;
   overflow: hidden;
   position: relative;
 }
 
-/* Нижняя полоска (home indicator) */
+/* Убираем нижнюю полоску */
 .phone-bottom-bar {
-  position: absolute;
-  bottom: 8px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 140px;
-  height: 5px;
-  background: #444;
-  border-radius: 3px;
-  z-index: 10;
+  display: none;
+}
+
+/* Desktop версия с ограничением по ширине */
+@media (min-width: 769px) {
+  .app-container {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+  
+  .phone-frame {
+    width: 900px;
+    max-width: 95vw;
+    height: 600px;
+    max-height: 90vh;
+    border-radius: 24px;
+    box-shadow: 0 20px 80px rgba(0, 0, 0, 0.3);
+  }
+  
+  .phone-screen {
+    border-radius: 24px;
+  }
 }
 
 /* Контент приложения */
@@ -116,21 +92,36 @@
 /* Кнопка burger в левом верхнем углу */
 .burger-button {
   position: absolute;
-  top:35px;
-  left: 15px;
-  width: 40px;
-  height: 40px;
+  top: 20px;
+  left: 20px;
+  width: 48px;
+  height: 48px;
   cursor: pointer;
-  z-index: 4;
-  transition: transform 0.2s;
+  z-index: 6;
+  transition: all 0.2s;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  padding: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.burger-button img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .burger-button:hover {
-  transform: scale(1.1);
+  transform: scale(1.08);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  background: rgba(255, 255, 255, 1);
 }
 
 .burger-button:active {
-  transform: scale(0.95);
+  transform: scale(0.98);
 }
 
 /* Stats styles moved to component CSS files */
@@ -173,17 +164,24 @@ h1 {
   text-align: center;
 }
 
-/* Адаптивность для маленьких экранов */
-@media (max-width: 500px) {
+/* Адаптивность для мобильных экранов */
+@media (max-width: 768px) {
   .app-container {
-    padding: 10px;
+    background: #ffffff;
+    padding: 0;
   }
   
   .phone-frame {
     width: 100%;
-    max-width: 375px;
     height: 100vh;
-    max-height: 812px;
+    border-radius: 0;
+  }
+  
+  .burger-button {
+    top: 12px;
+    left: 12px;
+    width: 44px;
+    height: 44px;
   }
 }
 

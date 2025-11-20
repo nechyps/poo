@@ -1,7 +1,5 @@
 import './Menu.css'
 import settings from '../../assets/hud/settings.PNG'
-import buttonVolumeOn from '../../assets/hud/buttons/button_volume_ON.PNG'
-import buttonVolumeOff from '../../assets/hud/buttons/button_volume_off.PNG'
 import buttonLogout from '../../assets/hud/buttons/button_logout.PNG'
 import buttonCross from '../../assets/hud/buttons/button_cross.PNG'
 
@@ -93,18 +91,8 @@ function Menu({
                 </button>
               </div>
 
-              <div className="menu-section__body">
-                <img
-                  src={section.isOn ? buttonVolumeOn : buttonVolumeOff}
-                  alt=""
-                  className="menu-icon-button"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    playClickSound?.()
-                    section.onToggle?.()
-                  }}
-                />
-                {section.isOn && (
+              {section.isOn && (
+                <div className="menu-section__body">
                   <input
                     type="range"
                     min="0"
@@ -114,8 +102,9 @@ function Menu({
                     onChange={section.slider.onChange}
                     className="volume-slider"
                   />
-                )}
-              </div>
+                  <span className="volume-value">{Math.round(section.slider.value * 100)}%</span>
+                </div>
+              )}
             </section>
           ))}
 

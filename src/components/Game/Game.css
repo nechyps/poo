@@ -8,22 +8,5 @@
   z-index: 1;
 }
 
-.burger-button {
-  position: absolute;
-  top: 35px;
-  left: 15px;
-  width: 40px;
-  height: 40px;
-  cursor: pointer;
-  z-index: 6;
-  transition: transform 0.2s;
-}
-
-.burger-button:hover {
-  transform: scale(1.1);
-}
-
-.burger-button:active {
-  transform: scale(0.95);
-}
+/* Burger button styles moved to App.css for consistency */
 
