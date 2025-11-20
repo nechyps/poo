@@ -1,0 +1,76 @@
+.character-container {
+  position: absolute;
+  top: 55%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.character {
+  width: 200px;
+  height: auto;
+  animation: levitate 2s ease-in-out infinite;
+}
+
+.character.no-levitate {
+  animation: none;
+}
+
+.character.idle {
+  animation: levitate 2s ease-in-out infinite;
+}
+
+.character.eating {
+  animation: eatingAnimation 0.5s ease-in-out;
+}
+
+.character.jumping {
+  animation: jumpAnimation 0.5s ease-in-out;
+}
+
+.character.sleeping {
+  animation: sleepAnimation 2s ease-in-out infinite;
+}
+
+@keyframes levitate {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+}
+
+@keyframes eatingAnimation {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-10px) scale(1.1);
+  }
+}
+
+@keyframes jumpAnimation {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-20px) scale(1.15);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes sleepAnimation {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-5px) scale(0.98);
+  }
+}
+

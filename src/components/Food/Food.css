@@ -1,0 +1,32 @@
+.food-item {
+  position: absolute;
+  width: 100px;
+  height: auto;
+  top: 60%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.food-item.flying {
+  opacity: 1;
+  animation: flyToCharacter 0.8s ease-in forwards;
+}
+
+@keyframes flyToCharacter {
+  0% {
+    top: 60%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+  100% {
+    top: 55%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.3);
+    opacity: 0;
+  }
+}
+

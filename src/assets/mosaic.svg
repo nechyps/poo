@@ -1,0 +1,13 @@
+<svg width="400" height="400" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <pattern id="mosaic" x="0" y="0" width="50" height="50" patternUnits="userSpaceOnUse">
+      <rect x="0" y="0" width="25" height="25" fill="#667eea" opacity="0.8"/>
+      <rect x="25" y="0" width="25" height="25" fill="#764ba2" opacity="0.8"/>
+      <rect x="25" y="25" width="25" height="25" fill="#667eea" opacity="0.6"/>
+      <rect x="0" y="25" width="25" height="25" fill="#764ba2" opacity="0.6"/>
+    </pattern>
+  </defs>
+  <rect width="400" height="400" fill="url(#mosaic)"/>
+  <text x="50%" y="50%" font-family="Arial, sans-serif" font-size="24" fill="white" text-anchor="middle" dy=".3em">Mosaic Image</text>
+</svg>
+

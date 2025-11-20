@@ -1,0 +1,51 @@
+.play-button {
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: linear-gradient(135deg, #ff88b5 0%, #ffbbdd 100%);
+  border: none;
+  border-radius: 25px;
+  padding: 12px 24px;
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(255, 136, 181, 0.4);
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  animation: playButtonAppear 0.5s ease-out;
+}
+
+.play-button:hover {
+  transform: translateY(-50%) scale(1.05);
+  box-shadow: 0 6px 20px rgba(255, 136, 181, 0.6);
+}
+
+.play-button:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
+.play-icon {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.play-text {
+  font-size: 14px;
+}
+
+@keyframes playButtonAppear {
+  0% {
+    opacity: 0;
+    transform: translateY(-50%) translateX(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+  }
+}
+

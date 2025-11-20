@@ -1,0 +1,68 @@
+.stats-panel {
+  position: absolute;
+  top: 20px;
+  left: 0;
+  right: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  z-index: 3;
+  pointer-events: none;
+  transform: scale(1.125);
+  transform-origin: top center;
+}
+
+
+
+.stats-compact {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 8px;
+  padding: 4px 7px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  margin-left: auto;
+  margin-right: 12px;
+  width: fit-content;
+}
+
+.stat-mini {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 0;
+}
+
+.stat-mini__icon {
+  font-size: 11px;
+  width: 14px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.stat-mini__value {
+  font-size: 10px;
+  font-weight: 700;
+  color: #333;
+  margin-left: auto;
+}
+
+.stat-mini__coin-icon {
+  width: 14px;
+  height: 14px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.stat-mini__value--coins {
+  color: #ffb703;
+}
+
+
+@media (max-width: 420px) {
+  .stats-panel {
+    top: 35px;
+  }
+}
+

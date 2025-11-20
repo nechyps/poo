@@ -1,0 +1,42 @@
+.bottom-buttons {
+  position: absolute;
+  bottom: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 15px;
+  z-index: 3;
+}
+
+.bottom-button {
+  width: 70px;
+  height: 70px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: transform 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bottom-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.bottom-button:not(:disabled):hover {
+  transform: scale(1.1);
+}
+
+.bottom-button:not(:disabled):active {
+  transform: scale(0.95);
+}
+
+.bottom-button img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
