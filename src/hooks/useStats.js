@@ -62,7 +62,7 @@ export function useStats() {
 
   // Auto-save to database when stats change
   useEffect(() => {
-    if (petLoading || !pet || !pet.id) return
+    if (petLoading || !pet) return
 
     // Очищаем предыдущий таймаут
     if (saveTimeoutRef.current) {
@@ -140,7 +140,7 @@ export function useStats() {
       setLastUpdate(now)
 
       // Немедленно сохраняем в БД при действии
-      if (pet && pet.id) {
+      if (pet) {
         savePetStats(newStats).catch(err => {
           console.error('Failed to save stats after action:', err)
         })
@@ -193,7 +193,7 @@ export function useStats() {
     lastUpdateRef.current = Date.now()
     
     // Сохраняем сброшенные статистики в БД
-    if (pet && pet.id) {
+    if (pet) {
       try {
         await savePetStats(DEFAULT_STATS)
       } catch (error) {

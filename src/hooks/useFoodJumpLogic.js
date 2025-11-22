@@ -300,7 +300,7 @@ export function useFoodJumpLogic({ isActive, onGameEnd, onCoinsEarned }) {
         cancelAnimationFrame(animationFrameRef.current)
       }
     }
-  }, [isGameRunning, isActive])
+  }, [isGameRunning, isActive, onGameEnd, onCoinsEarned])
 
   // Управление (наклон влево/вправо)
   const handleKeyDown = useCallback((e) => {

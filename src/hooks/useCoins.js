@@ -15,7 +15,7 @@ export function useCoins() {
 
   // Save coins to database when they change
   useEffect(() => {
-    if (!pet || !pet.id) return
+    if (!pet) return
 
     // Очищаем предыдущий таймаут
     if (saveTimeoutRef.current) {
@@ -42,7 +42,7 @@ export function useCoins() {
     setCoins(prev => {
       const newCoins = prev + amount
       // Немедленно сохраняем при изменении монет
-      if (pet && pet.id) {
+      if (pet) {
         savePetStats({ coins: newCoins }).catch(err => {
           console.error('Failed to save coins after add:', err)
         })
@@ -55,7 +55,7 @@ export function useCoins() {
     setCoins(prev => {
       const newCoins = Math.max(0, prev - amount)
       // Немедленно сохраняем при изменении монет
-      if (pet && pet.id) {
+      if (pet) {
         savePetStats({ coins: newCoins }).catch(err => {
           console.error('Failed to save coins after spend:', err)
         })
@@ -66,7 +66,7 @@ export function useCoins() {
 
   const resetCoins = useCallback(() => {
     setCoins(0)
-    if (pet && pet.id) {
+    if (pet) {
       savePetStats({ coins: 0 }).catch(err => {
         console.error('Failed to reset coins in database:', err)
       })
