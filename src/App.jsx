@@ -26,12 +26,14 @@ function App() {
     const handleAuthCallback = async () => {
       const hashParams = new URLSearchParams(window.location.hash.substring(1))
       if (hashParams.get('access_token')) {
+        console.log('OAuth callback detected, waiting for session...')
         // OAuth callback обрабатывается автоматически Supabase
-        // После успешной авторизации запускаем игру
+        // Ждем немного дольше, чтобы Supabase успел обработать сессию
         setTimeout(() => {
+          console.log('Starting game after OAuth callback')
           setShowAuthScreen(false)
           setIsGameStarted(true)
-        }, 1000)
+        }, 2000) // Увеличено до 2 секунд для обработки сессии
         // Очищаем hash из URL
         window.history.replaceState(null, '', window.location.pathname)
       }
@@ -59,9 +61,13 @@ function App() {
 
   const handleAuthSuccess = () => {
     // После успешной авторизации запускаем игру
+    console.log('App: handleAuthSuccess called')
     audio.playClickSound()
     setShowAuthScreen(false)
-    setIsGameStarted(true)
+    // Небольшая задержка перед запуском игры, чтобы состояние авторизации успело обновиться
+    setTimeout(() => {
+      setIsGameStarted(true)
+    }, 300)
   }
 
   const handleSkipAuth = () => {
