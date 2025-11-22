@@ -29,14 +29,14 @@ const MEALS = [
 ]
 
 const MESSAGES = {
-  feed: ['Yummy!', 'Delicious!', 'Thanks!', 'Mmm...'],
-  sleep: ['Good night...', 'Zzz...', 'Sleepy...'],
-  play: ['Yay!', 'Fun!', 'Wheee!'],
-  clean: ['Fresh!', 'Clean!', 'Ahh...'],
-  hungry: ["I'm hungry!", 'Feed me!', 'Hungry...'],
-  tired: ["I'm tired!", 'Need sleep...', 'Sleepy...'],
-  sad: ["I'm sad...", 'Help me...', 'Not feeling well...'],
-  happy: ['Happy!', 'Great!', 'Wonderful!']
+  feed: ['Вкусно!', 'Вкуснятина!', 'Спасибо!', 'Ммм...'],
+  sleep: ['Спокойной ночи...', 'Хррр...', 'Сонно...'],
+  play: ['Ура!', 'Весело!', 'Уиии!'],
+  clean: ['Свежо!', 'Чисто!', 'Ах...'],
+  hungry: ['Я голоден!', 'Покорми меня!', 'Голодный...'],
+  tired: ['Я устал!', 'Нужен сон...', 'Сонный...'],
+  sad: ['Мне грустно...', 'Помоги мне...', 'Плохо себя чувствую...'],
+  happy: ['Счастлив!', 'Отлично!', 'Замечательно!']
 }
 
 function Game({ onLogout }) {
@@ -45,6 +45,7 @@ function Game({ onLogout }) {
   const [selectedFood, setSelectedFood] = useState(null)
   const [isFoodFlying, setIsFoodFlying] = useState(false)
   const [message, setMessage] = useState('')
+  const [errorMessage, setErrorMessage] = useState('') // Отдельное состояние для ошибок
   const [isNightMode, setIsNightMode] = useState(false)
   const [showPlayButton, setShowPlayButton] = useState(true) // Всегда показываем кнопку
   const [isMiniGameActive, setIsMiniGameActive] = useState(false)
@@ -61,6 +62,13 @@ function Game({ onLogout }) {
     setTimeout(() => {
       setMessage('')
     }, 3000)
+  }, [])
+
+  const showErrorMessage = useCallback((text) => {
+    setErrorMessage(text)
+    setTimeout(() => {
+      setErrorMessage('')
+    }, 4000) // Ошибки показываются чуть дольше
   }, [])
 
   const handleSave = useCallback(async () => {
@@ -165,7 +173,7 @@ function Game({ onLogout }) {
     
     // Check if player has enough coins
     if (coins < 20) {
-      showMessage("Not enough coins! Need 20 coins to feed.")
+      showErrorMessage("Недостаточно монет! Нужно 20 монет для кормления.")
       return
     }
     
@@ -317,6 +325,9 @@ function Game({ onLogout }) {
 
             {/* Message */}
             <Message text={message} visible={!!message} />
+            
+            {/* Error Message - поверх всего */}
+            <Message text={errorMessage} visible={!!errorMessage} isError={true} />
             
             {/* Save/Load Message */}
             {saveMessage && (

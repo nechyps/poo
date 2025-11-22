@@ -12,6 +12,12 @@
   padding: 0 var(--spacing-md);
 }
 
+/* Сообщения об ошибках должны быть поверх всего */
+.message-container.message-error {
+  z-index: 200;
+  top: 20%; /* Чуть выше для лучшей видимости */
+}
+
 .message-bubble {
   background: rgba(255, 255, 255, 0.98);
   color: #1a1a1a;
@@ -28,6 +34,27 @@
   max-width: 100%;
   line-height: 1.4;
   border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Стили для сообщений об ошибках */
+.message-bubble-error {
+  background: rgba(255, 87, 87, 0.95);
+  color: #ffffff;
+  border: 2px solid rgba(255, 0, 0, 0.3);
+  box-shadow: 0 8px 24px rgba(255, 87, 87, 0.4), 0 4px 12px rgba(255, 87, 87, 0.3);
+  font-weight: 800;
+  animation: messageAppear 0.3s ease-out, errorPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes errorPulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 8px 24px rgba(255, 87, 87, 0.4);
+  }
+  50% {
+    transform: scale(1.02);
+    box-shadow: 0 10px 30px rgba(255, 87, 87, 0.6);
+  }
 }
 
 @keyframes messageAppear {
