@@ -15,28 +15,56 @@ export function AuthProvider({ children }) {
 
   // Проверка текущей сессии при загрузке
   useEffect(() => {
+    let mounted = true
+    
     // Получаем текущую сессию
-    supabase.auth.getSession().then(({ data: { session }, error }) => {
-      if (error) {
-        console.error('Ошибка получения сессии:', error)
-        setError(error.message)
-      } else {
-        setSession(session)
-        setUser(session?.user ?? null)
-      }
-      setLoading(false)
-    })
+    supabase.auth.getSession()
+      .then(({ data: { session }, error }) => {
+        if (!mounted) return
+        
+        if (error) {
+          console.error('Ошибка получения сессии:', error)
+          setError(error.message)
+        } else {
+          setSession(session)
+          setUser(session?.user ?? null)
+        }
+        setLoading(false)
+      })
+      .catch((err) => {
+        if (!mounted) return
+        console.error('Критическая ошибка при получении сессии:', err)
+        setError('Не удалось подключиться к серверу авторизации')
+        setLoading(false)
+      })
 
     // Слушаем изменения состояния аутентификации
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session)
-      setUser(session?.user ?? null)
+    let subscription = null
+    try {
+      const {
+        data: { subscription: sub },
+      } = supabase.auth.onAuthStateChange((_event, session) => {
+        if (!mounted) return
+        setSession(session)
+        setUser(session?.user ?? null)
+        setLoading(false)
+      })
+      subscription = sub
+    } catch (err) {
+      console.error('Ошибка подписки на изменения auth:', err)
       setLoading(false)
-    })
+    }
 
-    return () => subscription.unsubscribe()
+    return () => {
+      mounted = false
+      if (subscription) {
+        try {
+          subscription.unsubscribe()
+        } catch (err) {
+          console.error('Ошибка отписки:', err)
+        }
+      }
+    }
   }, [])
 
   // Вход через Google

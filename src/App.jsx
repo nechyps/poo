@@ -8,9 +8,17 @@ import menuBackground from './assets/rooms/menu_background.PNG'
 import startButton from './assets/hud/buttons/button_start.PNG'
 
 function App() {
-  const { isAuthenticated, loading: authLoading } = useAuth()
+  const { isAuthenticated, loading: authLoading, error: authError } = useAuth()
   const [isGameStarted, setIsGameStarted] = useState(false)
   const audio = useAudio()
+
+  // Если критическая ошибка авторизации, показываем предупреждение но продолжаем работу
+  useEffect(() => {
+    if (authError) {
+      console.warn('⚠️ Ошибка авторизации:', authError)
+      console.warn('⚠️ Игра работает в гостевом режиме.')
+    }
+  }, [authError])
 
   // Обработка OAuth callback
   useEffect(() => {
@@ -35,8 +43,8 @@ function App() {
     setIsGameStarted(false)
   }
 
-  // Показываем загрузку при проверке аутентификации
-  if (authLoading) {
+  // Показываем загрузку при проверке аутентификации (только если authContext доступен)
+  if (authContext && authLoading) {
     return (
       <div className="app-container">
         <div className="phone-frame">
