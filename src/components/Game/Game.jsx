@@ -267,12 +267,16 @@ function Game({ onLogout }) {
             />
             
             {/* Burger Menu Button */}
-            <img 
-              src={buttonBurger} 
-              alt="Burger Menu" 
+            <button 
               className="burger-button" 
               onClick={handleBurgerClick}
-            />
+              aria-label="Menu"
+            >
+              <img 
+                src={buttonBurger} 
+                alt="" 
+              />
+            </button>
             
             {/* Menu */}
             {isMenuOpen && (
