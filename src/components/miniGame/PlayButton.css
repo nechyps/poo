@@ -1,25 +1,17 @@
-.play-button-container {
+.play-button {
   position: absolute;
   left: clamp(15%, 18vw, 22%); 
-  top: 30%; /* Поднимаем выше, под бургер-меню */
+  top: 30%;
   transform: translate(-50%, -50%);
   z-index: 6;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  animation: playContainerAppear 0.6s ease-out;
   pointer-events: auto;
-}
-
-.play-button {
   background: linear-gradient(135deg, #ffd700 0%, #ffed4e 50%, #ffc107 100%);
   border: 2px solid rgba(255, 255, 255, 0.95);
   border-radius: 14px;
   
-  /* Еще более компактный размер */
-  width: clamp(95px, 14vw, 130px);
-  padding: 8px 10px;
+  /* Компактный размер без лишнего текста */
+  width: clamp(70px, 12vw, 100px);
+  padding: 10px;
   
   color: #1a1a1a;
   cursor: pointer;
@@ -31,9 +23,9 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
+  gap: 6px;
   transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-  animation: playButtonPulse 2s ease-in-out infinite;
+  animation: playButtonPulse 2s ease-in-out infinite, playContainerAppear 0.6s ease-out;
   position: relative;
   overflow: hidden;
 }
@@ -71,18 +63,7 @@
   animation: iconBounce 1.5s ease-in-out infinite;
 }
 
-.play-text {
-  font-size: clamp(9px, 1.6vw, 11px);
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.2px;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
-  color: #1a1a1a;
-  text-align: center;
-  white-space: nowrap;
-  line-height: 1.1;
-  transform: scale(0.95); /* Дополнительное сжатие */
-}
+/* Удален .play-text */
 
 .play-reward {
   display: flex;
@@ -111,17 +92,7 @@
   white-space: nowrap;
 }
 
-.play-hint {
-  background: rgba(255, 255, 255, 0.95);
-  color: #1a1a1a;
-  padding: 3px 6px;
-  border-radius: 8px;
-  font-size: clamp(9px, 1.8vw, 11px);
-  font-weight: 600;
-  box-shadow: var(--shadow-sm);
-  animation: hintBounce 1s ease-in-out infinite;
-  white-space: nowrap;
-}
+/* Удален .play-hint */
 
 /* Animations */
 @keyframes shimmer {
@@ -137,11 +108,6 @@
 @keyframes coinSpin {
   0%, 100% { transform: rotateY(0deg); }
   50% { transform: rotateY(180deg); }
-}
-
-@keyframes hintBounce {
-  0%, 100% { transform: translateY(0); opacity: 1; }
-  50% { transform: translateY(-4px); opacity: 0.8; }
 }
 
 @keyframes playContainerAppear {
@@ -165,18 +131,10 @@
 
 /* Mobile specific adjustments */
 @media (max-width: 380px) {
-  .play-button-container {
+  .play-button {
     left: 18%;
     top: 28%;
-  }
-  
-  .play-button {
-    width: 85px;
-    padding: 6px 8px;
-  }
-  
-  .play-text {
-    font-size: 8px;
-    letter-spacing: 0.1px;
+    width: 65px;
+    padding: 8px;
   }
 }
