@@ -1,36 +1,36 @@
 .play-button-container {
   position: absolute;
-  left: 50%;
+  left: 25%;
   top: 42%;
   transform: translate(-50%, -50%);
   z-index: 6;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   animation: playContainerAppear 0.6s ease-out;
 }
 
 .play-button {
   background: linear-gradient(135deg, #ffd700 0%, #ffed4e 50%, #ffc107 100%);
-  border: 4px solid rgba(255, 255, 255, 0.95);
-  border-radius: 24px;
-  width: 180px;
-  padding: 16px 20px;
+  border: 3px solid rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
+  width: 140px;
+  padding: 12px 16px;
   color: #1a1a1a;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 700;
   cursor: pointer;
   box-shadow: 
-    0 10px 30px rgba(255, 193, 7, 0.6),
-    0 6px 16px rgba(255, 193, 7, 0.4),
+    0 8px 24px rgba(255, 193, 7, 0.6),
+    0 4px 12px rgba(255, 193, 7, 0.4),
     inset 0 2px 4px rgba(255, 255, 255, 0.4),
-    0 0 0 4px rgba(255, 193, 7, 0.2);
+    0 0 0 3px rgba(255, 193, 7, 0.2);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 3px;
   transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
   animation: playButtonPulse 2s ease-in-out infinite;
   position: relative;
@@ -81,7 +81,7 @@
 }
 
 .play-icon {
-  font-size: 32px;
+  font-size: 26px;
   line-height: 1;
   text-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
   animation: iconBounce 1.5s ease-in-out infinite;
@@ -93,10 +93,10 @@
 }
 
 .play-text {
-  font-size: 16px;
+  font-size: 13px;
   font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.3px;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
   color: #1a1a1a;
 }
@@ -104,17 +104,17 @@
 .play-reward {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   background: rgba(255, 255, 255, 0.9);
-  padding: 6px 12px;
-  border-radius: 20px;
+  padding: 4px 10px;
+  border-radius: 16px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  margin-top: 2px;
+  margin-top: 1px;
 }
 
 .play-coin-icon {
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
   object-fit: contain;
   animation: coinSpin 2s linear infinite;
 }
@@ -125,7 +125,7 @@
 }
 
 .play-reward-text {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
   color: #ff6b00;
   text-shadow: none;
@@ -134,9 +134,9 @@
 .play-hint {
   background: rgba(255, 255, 255, 0.95);
   color: #1a1a1a;
-  padding: 8px 16px;
-  border-radius: 16px;
-  font-size: 14px;
+  padding: 6px 12px;
+  border-radius: 12px;
+  font-size: 12px;
   font-weight: 600;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   animation: hintBounce 1s ease-in-out infinite;
@@ -178,41 +178,19 @@
   }
 }
 
-/* Desktop: увеличиваем кнопку игры */
+/* Desktop: немного увеличиваем кнопку игры */
 @media (min-width: 769px) {
+  .play-button-container {
+    left: 20%;
+  }
+  
   .play-button {
-    width: 220px;
-    padding: 20px 24px;
+    width: 160px;
+    padding: 14px 18px;
   }
   
   .play-icon {
-    font-size: 38px;
-  }
-  
-  .play-text {
-    font-size: 18px;
-  }
-  
-  .play-reward-text {
-    font-size: 13px;
-  }
-  
-  .play-coin-icon {
-    width: 24px;
-    height: 24px;
-  }
-  
-  .play-hint {
-    font-size: 15px;
-    padding: 10px 18px;
-  }
-}
-
-/* Mobile: адаптируем под маленькие экраны */
-@media (max-width: 420px) {
-  .play-button {
-    width: 160px;
-    padding: 14px 16px;
+    font-size: 30px;
   }
   
   .play-text {
@@ -220,12 +198,51 @@
   }
   
   .play-reward-text {
-    font-size: 11px;
+    font-size: 12px;
+  }
+  
+  .play-coin-icon {
+    width: 18px;
+    height: 18px;
   }
   
   .play-hint {
-    font-size: 12px;
-    padding: 6px 12px;
+    font-size: 13px;
+    padding: 7px 14px;
+  }
+}
+
+/* Mobile: адаптируем под маленькие экраны */
+@media (max-width: 420px) {
+  .play-button-container {
+    left: 30%;
+  }
+  
+  .play-button {
+    width: 120px;
+    padding: 10px 12px;
+  }
+  
+  .play-icon {
+    font-size: 22px;
+  }
+  
+  .play-text {
+    font-size: 11px;
+  }
+  
+  .play-reward-text {
+    font-size: 10px;
+  }
+  
+  .play-coin-icon {
+    width: 14px;
+    height: 14px;
+  }
+  
+  .play-hint {
+    font-size: 10px;
+    padding: 5px 10px;
   }
 }
 
