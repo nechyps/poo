@@ -26,7 +26,6 @@ function App() {
   return (
     <div className="app-container">
       <div className="phone-frame">
-        <div className="phone-notch"></div>
         <div className="phone-screen">
           <div className="content">
             <img 
@@ -44,7 +43,6 @@ function App() {
             </div>
           </div>
         </div>
-        <div className="phone-bottom-bar"></div>
       </div>
     </div>
   )

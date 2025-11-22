@@ -74,3 +74,10 @@
   }
 }
 
+/* Desktop: увеличиваем персонажа */
+@media (min-width: 769px) {
+  .character {
+    width: 280px;
+  }
+}
+

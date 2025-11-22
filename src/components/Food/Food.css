@@ -30,3 +30,10 @@
   }
 }
 
+/* Desktop: увеличиваем еду */
+@media (min-width: 769px) {
+  .food-item {
+    width: 130px;
+  }
+}
+

@@ -46,7 +46,7 @@ function Game({ onLogout }) {
   const [isFoodFlying, setIsFoodFlying] = useState(false)
   const [message, setMessage] = useState('')
   const [isNightMode, setIsNightMode] = useState(false)
-  const [showPlayButton, setShowPlayButton] = useState(false)
+  const [showPlayButton, setShowPlayButton] = useState(true) // Всегда показываем кнопку
   const [isMiniGameActive, setIsMiniGameActive] = useState(false)
 
   const audio = useAudio(true) // Autoplay music when game starts
@@ -137,8 +137,7 @@ function Game({ onLogout }) {
       setIsNightMode(false)
       return
     }
-    // Toggle play button visibility
-    setShowPlayButton(prev => !prev)
+    // Reset to day background
     setCurrentBackground(gameBackground)
     setIsNightMode(false)
     resetToNormal()
@@ -146,7 +145,6 @@ function Game({ onLogout }) {
 
   const handlePlayButtonClick = () => {
     audio.playClickSound()
-    setShowPlayButton(false)
     setIsMiniGameActive(true)
     // Game will start automatically when CatchFoodGame becomes active
   }
@@ -156,7 +154,7 @@ function Game({ onLogout }) {
     // Optionally reward player based on score
     if (finalScore > 0) {
       performAction('play') // Increase happiness
-      showMessage(`Great game! Score: ${finalScore}`)
+      showMessage(`Отлично! Счёт: ${finalScore}`)
     }
   }, [performAction, showMessage])
 
@@ -229,7 +227,6 @@ function Game({ onLogout }) {
     return (
       <div className="app-container">
         <div className="phone-frame">
-          <div className="phone-notch"></div>
           <div className="phone-screen">
             <div style={{
               display: 'flex',
@@ -261,7 +258,6 @@ function Game({ onLogout }) {
   return (
     <div className="app-container">
       <div className="phone-frame">
-        <div className="phone-notch"></div>
         <div className="phone-screen">
           <div className="content">
             <img 
@@ -383,7 +379,6 @@ function Game({ onLogout }) {
             />
           </div>
         </div>
-        <div className="phone-bottom-bar"></div>
       </div>
     </div>
   )

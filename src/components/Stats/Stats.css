@@ -60,6 +60,25 @@
 }
 
 
+/* Desktop: немного увеличиваем панель статистики */
+@media (min-width: 769px) {
+  .stats-panel {
+    transform: scale(1.3);
+    top: 25px;
+    right: 20px;
+  }
+  
+  .stats-compact {
+    margin-right: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .stats-panel {
+    top: 20px;
+  }
+}
+
 @media (max-width: 420px) {
   .stats-panel {
     top: 35px;

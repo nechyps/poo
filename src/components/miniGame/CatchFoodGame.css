@@ -107,3 +107,35 @@
   display: block;
 }
 
+/* Desktop: адаптируем мини-игру */
+@media (min-width: 769px) {
+  .game-hud {
+    top: 100px;
+    padding: 10px 30px;
+  }
+  
+  .hud-item {
+    padding: 10px 20px;
+  }
+  
+  .hud-label {
+    font-size: 14px;
+  }
+  
+  .hud-value {
+    font-size: 24px;
+  }
+  
+  .mini-game-close-button {
+    width: 48px;
+    height: 48px;
+    top: 24px;
+    right: 24px;
+  }
+  
+  .mini-game-close-button img {
+    width: 28px;
+    height: 28px;
+  }
+}
+

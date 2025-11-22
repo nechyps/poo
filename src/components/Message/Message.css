@@ -41,3 +41,16 @@
   }
 }
 
+/* Desktop: увеличиваем сообщения */
+@media (min-width: 769px) {
+  .message-container {
+    top: 30%;
+    max-width: 400px;
+  }
+  
+  .message-bubble {
+    padding: 16px 22px;
+    font-size: 17px;
+  }
+}
+

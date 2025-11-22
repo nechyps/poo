@@ -25,6 +25,31 @@
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
 }
 
+/* Desktop: увеличиваем меню */
+@media (min-width: 769px) {
+  .menu-content {
+    width: min(420px, 85%);
+    max-height: 75vh;
+    padding: 28px 24px 24px;
+  }
+  
+  .menu-header h2 {
+    font-size: 24px;
+  }
+  
+  .menu-header p {
+    font-size: 14px;
+  }
+  
+  .menu-section__head h3 {
+    font-size: 19px;
+  }
+  
+  .menu-section__head p {
+    font-size: 14px;
+  }
+}
+
 @media (max-width: 768px) {
   .menu-content {
     max-height: 60vh;

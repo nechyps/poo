@@ -40,3 +40,16 @@
   object-fit: contain;
 }
 
+/* Desktop: увеличиваем кнопки действий */
+@media (min-width: 769px) {
+  .bottom-buttons {
+    bottom: 60px;
+    gap: 20px;
+  }
+  
+  .bottom-button {
+    width: 90px;
+    height: 90px;
+  }
+}
+
