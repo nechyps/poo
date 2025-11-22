@@ -1,39 +1,37 @@
 .play-button-container {
   position: absolute;
-  /* Используем percentage + clamp для умного позиционирования */
-  left: clamp(15%, 20vw, 25%); 
-  top: 45%; /* Чуть выше центра, чтобы не перекрывать нижние кнопки */
+  left: clamp(15%, 18vw, 22%); 
+  top: 30%; /* Поднимаем выше, под бургер-меню */
   transform: translate(-50%, -50%);
   z-index: 6;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--spacing-xs);
+  gap: 6px;
   animation: playContainerAppear 0.6s ease-out;
   pointer-events: auto;
 }
 
 .play-button {
   background: linear-gradient(135deg, #ffd700 0%, #ffed4e 50%, #ffc107 100%);
-  border: 3px solid rgba(255, 255, 255, 0.95);
-  border-radius: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
   
-  /* Fluid width based on viewport */
-  width: clamp(120px, 18vw, 180px);
-  padding: var(--spacing-sm);
+  /* Уменьшенный размер */
+  width: clamp(100px, 15vw, 140px);
+  padding: 10px 12px;
   
   color: #1a1a1a;
   cursor: pointer;
   box-shadow: 
-    0 8px 24px rgba(255, 193, 7, 0.6),
-    0 4px 12px rgba(255, 193, 7, 0.4),
-    inset 0 2px 4px rgba(255, 255, 255, 0.4),
-    0 0 0 3px rgba(255, 193, 7, 0.2);
+    0 6px 18px rgba(255, 193, 7, 0.5),
+    0 3px 8px rgba(255, 193, 7, 0.3),
+    inset 0 2px 4px rgba(255, 255, 255, 0.4);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 3px;
   transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
   animation: playButtonPulse 2s ease-in-out infinite;
   position: relative;
@@ -67,44 +65,45 @@
 }
 
 .play-icon {
-  font-size: var(--font-xl);
+  font-size: clamp(18px, 4vw, 24px);
   line-height: 1;
   text-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
   animation: iconBounce 1.5s ease-in-out infinite;
 }
 
 .play-text {
-  font-size: var(--font-sm);
+  font-size: clamp(10px, 2vw, 13px);
   font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.3px;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
   color: #1a1a1a;
   text-align: center;
   white-space: nowrap;
+  line-height: 1.2;
 }
 
 .play-reward {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 3px;
   background: rgba(255, 255, 255, 0.9);
-  padding: 4px 8px;
-  border-radius: 12px;
+  padding: 3px 6px;
+  border-radius: 10px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   width: 100%;
 }
 
 .play-coin-icon {
-  width: var(--font-md);
-  height: var(--font-md);
+  width: clamp(12px, 3vw, 16px);
+  height: clamp(12px, 3vw, 16px);
   object-fit: contain;
   animation: coinSpin 2s linear infinite;
 }
 
 .play-reward-text {
-  font-size: var(--font-xs);
+  font-size: clamp(9px, 1.8vw, 11px);
   font-weight: 700;
   color: #ff6b00;
   text-shadow: none;
@@ -114,9 +113,9 @@
 .play-hint {
   background: rgba(255, 255, 255, 0.95);
   color: #1a1a1a;
-  padding: 4px 8px;
+  padding: 3px 6px;
   border-radius: 8px;
-  font-size: var(--font-xs);
+  font-size: clamp(9px, 1.8vw, 11px);
   font-weight: 600;
   box-shadow: var(--shadow-sm);
   animation: hintBounce 1s ease-in-out infinite;
@@ -163,9 +162,15 @@
   transform: scale(0.98);
 }
 
-/* Mobile specific adjustments if needed */
+/* Mobile specific adjustments */
 @media (max-width: 380px) {
   .play-button-container {
-    left: 20%; /* Move slightly closer to edge on very small screens */
+    left: 18%;
+    top: 28%;
+  }
+  
+  .play-button {
+    width: 90px;
+    padding: 8px 10px;
   }
 }
