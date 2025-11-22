@@ -1,13 +1,14 @@
 .food-item {
   position: absolute;
-  width: 100px;
+  /* Fluid sizing aligned with character scale */
+  width: clamp(80px, 15vh, 150px);
   height: auto;
   top: 60%;
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 2;
   opacity: 0;
-  transition: opacity 0.3s;
+  pointer-events: none;
 }
 
 .food-item.flying {
@@ -29,11 +30,3 @@
     opacity: 0;
   }
 }
-
-/* Desktop: увеличиваем еду */
-@media (min-width: 769px) {
-  .food-item {
-    width: 130px;
-  }
-}
-

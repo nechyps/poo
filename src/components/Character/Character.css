@@ -1,18 +1,23 @@
 .character-container {
   position: absolute;
-  top: 55%;
+  /* Center vertically relative to game area */
+  top: 55%; 
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 2;
   display: flex;
   justify-content: center;
   align-items: center;
+  pointer-events: none; /* Pass clicks through to background if needed */
 }
 
 .character {
-  width: 200px;
+  /* Fluid width: minimum 180px, ideal 35vh (relative to height), max 400px */
+  width: clamp(180px, 35vh, 400px);
   height: auto;
   animation: levitate 2s ease-in-out infinite;
+  /* Ensure crisp edges on high-dpi screens */
+  image-rendering: -webkit-optimize-contrast;
 }
 
 .character.no-levitate {
@@ -36,48 +41,22 @@
 }
 
 @keyframes levitate {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-15px);
-  }
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2vh); /* Responsive levitation height */ }
 }
 
 @keyframes eatingAnimation {
-  0%, 100% {
-    transform: translateY(0) scale(1);
-  }
-  50% {
-    transform: translateY(-10px) scale(1.1);
-  }
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-1.5vh) scale(1.1); }
 }
 
 @keyframes jumpAnimation {
-  0% {
-    transform: translateY(0) scale(1);
-  }
-  50% {
-    transform: translateY(-20px) scale(1.15);
-  }
-  100% {
-    transform: translateY(0) scale(1);
-  }
+  0% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-5vh) scale(1.15); }
+  100% { transform: translateY(0) scale(1); }
 }
 
 @keyframes sleepAnimation {
-  0%, 100% {
-    transform: translateY(0) scale(1);
-  }
-  50% {
-    transform: translateY(-5px) scale(0.98);
-  }
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-1vh) scale(0.98); }
 }
-
-/* Desktop: увеличиваем персонажа */
-@media (min-width: 769px) {
-  .character {
-    width: 280px;
-  }
-}
-
