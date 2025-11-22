@@ -64,10 +64,28 @@ export function useFoodJumpLogic({ isActive, onGameEnd, onCoinsEarned }) {
 
   // Start game
   const startGame = useCallback(() => {
-    resetGame()
+    // Сбрасываем состояние игры
+    setScore(0)
+    setLives(INITIAL_LIVES)
+    setFoods([])
+    setCoins([])
+    setPlayerY(300)
+    setPlayerVelocity(0)
+    setCameraY(0)
+    setJumpCount(0)
+    lastFoodYRef.current = 300
+    playerYRef.current = 300
+    velocityRef.current = 0
+    jumpCountRef.current = 0
+    lastPlatformIdRef.current = null
+    foodsRef.current = []
+    coinsRef.current = []
+    cameraYRef.current = 0
+    livesRef.current = INITIAL_LIVES
+    scoreRef.current = 0
+    
     setIsGameRunning(true)
     gameStartTimeRef.current = Date.now()
-    lastFoodYRef.current = 300
     
     // Создаем начальные платформы из еды
     const initialFoods = []
@@ -82,7 +100,7 @@ export function useFoodJumpLogic({ isActive, onGameEnd, onCoinsEarned }) {
     setFoods(initialFoods)
     foodsRef.current = initialFoods
     lastFoodYRef.current = 300 - 4 * FOOD_SPAWN_DISTANCE
-  }, [resetGame])
+  }, [])
 
   // Синхронизируем refs с state
   useEffect(() => {
@@ -135,7 +153,8 @@ export function useFoodJumpLogic({ isActive, onGameEnd, onCoinsEarned }) {
       const playerLeft = playerCenterX - PLAYER_WIDTH / 2
       const playerRight = playerCenterX + PLAYER_WIDTH / 2
 
-      currentFoods.forEach((food) => {
+      if (currentFoods && Array.isArray(currentFoods)) {
+        currentFoods.forEach((food) => {
         const foodTop = food.y
         const foodBottom = food.y + FOOD_HEIGHT
         const foodLeft = food.x
@@ -180,11 +199,13 @@ export function useFoodJumpLogic({ isActive, onGameEnd, onCoinsEarned }) {
           }
         }
       })
+      }
 
       // Проверяем сбор монеток
       const coinsToRemove = []
-      currentCoins.forEach((coin) => {
-        if (!coin.collected) {
+      if (currentCoins && Array.isArray(currentCoins)) {
+        currentCoins.forEach((coin) => {
+          if (!coin.collected) {
           const coinCenterX = coin.x + COIN_SIZE / 2
           const coinCenterY = coin.y + COIN_SIZE / 2
           const playerCenterY = playerYRef.current + PLAYER_HEIGHT / 2
@@ -200,8 +221,9 @@ export function useFoodJumpLogic({ isActive, onGameEnd, onCoinsEarned }) {
             scoreRef.current += 20
             setScore(scoreRef.current) // Бонус за монетку
           }
-        }
-      })
+          }
+        })
+      }
       
       if (coinsToRemove.length > 0) {
         const newCoins = coinsRef.current.filter(c => !coinsToRemove.includes(c.id))
@@ -232,16 +254,20 @@ export function useFoodJumpLogic({ isActive, onGameEnd, onCoinsEarned }) {
       }
 
       // Удаляем еду и монетки ниже экрана
-      const filteredFoods = currentFoods.filter(f => f.y < currentCameraY + 600)
-      if (filteredFoods.length !== currentFoods.length) {
-        foodsRef.current = filteredFoods
-        setFoods(filteredFoods)
+      if (currentFoods && Array.isArray(currentFoods)) {
+        const filteredFoods = currentFoods.filter(f => f.y < currentCameraY + 600)
+        if (filteredFoods.length !== currentFoods.length) {
+          foodsRef.current = filteredFoods
+          setFoods(filteredFoods)
+        }
       }
       
-      const filteredCoins = currentCoins.filter(c => c.y < currentCameraY + 600)
-      if (filteredCoins.length !== currentCoins.length) {
-        coinsRef.current = filteredCoins
-        setCoins(filteredCoins)
+      if (currentCoins && Array.isArray(currentCoins)) {
+        const filteredCoins = currentCoins.filter(c => c.y < currentCameraY + 600)
+        if (filteredCoins.length !== currentCoins.length) {
+          coinsRef.current = filteredCoins
+          setCoins(filteredCoins)
+        }
       }
 
       // Проверяем проигрыш (игрок упал слишком низко)
