@@ -77,39 +77,35 @@ function FoodJumpGame({ isActive, onGameEnd, onCoinsEarned }) {
       ctx.fillRect(0, 0, canvas.width, canvas.height)
 
       // Draw foods (platforms)
-      if (foods && foods.length > 0) {
-        foods.forEach((food) => {
-          if (!food || typeof food.type === 'undefined') return
-          const screenY = food.y - cameraY
-          if (screenY > -100 && screenY < canvas.height + 100) {
-            const foodImage = new Image()
-            foodImage.src = FOOD_IMAGES[food.type] || FOOD_IMAGES[0]
-            
-            // Draw food platform
-            if (foodImage.complete) {
-              ctx.drawImage(
-                foodImage,
-                food.x,
-                screenY,
-                80,
-                80
-              )
-            } else {
-              // Fallback rectangle while loading
-              ctx.fillStyle = '#ffbbdd'
-              ctx.fillRect(food.x, screenY, 80, 80)
-            }
+      foods.forEach((food) => {
+        const screenY = food.y - cameraY
+        if (screenY > -100 && screenY < canvas.height + 100) {
+          const foodImage = new Image()
+          foodImage.src = FOOD_IMAGES[food.type]
+          
+          // Draw food platform
+          if (foodImage.complete) {
+            ctx.drawImage(
+              foodImage,
+              food.x,
+              screenY,
+              80,
+              80
+            )
+          } else {
+            // Fallback rectangle while loading
+            ctx.fillStyle = '#ffbbdd'
+            ctx.fillRect(food.x, screenY, 80, 80)
           }
-        })
-      }
+        }
+      })
 
       // Draw coins
-      if (coins && coins.length > 0) {
-        coins.forEach((coin) => {
-          if (!coin || coin.collected) return
+      coins.forEach((coin) => {
+        if (!coin.collected) {
           const coinScreenY = coin.y - cameraY
           if (coinScreenY > -50 && coinScreenY < canvas.height + 50) {
-            if (coinImgRef.current && coinImgRef.current.complete) {
+            if (coinImgRef.current.complete) {
               ctx.drawImage(
                 coinImgRef.current,
                 coin.x,
@@ -131,8 +127,8 @@ function FoodJumpGame({ isActive, onGameEnd, onCoinsEarned }) {
               ctx.fill()
             }
           }
-        })
-      }
+        }
+      })
 
       // Draw player
       const playerScreenY = playerY - cameraY

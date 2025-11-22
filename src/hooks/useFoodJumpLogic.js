@@ -33,11 +33,6 @@ export function useFoodJumpLogic({ isActive, onGameEnd, onCoinsEarned }) {
   const velocityRef = useRef(0)
   const jumpCountRef = useRef(0)
   const lastPlatformIdRef = useRef(null) // ID последней платформы, с которой прыгнули
-  const foodsRef = useRef([]) // Ref для актуальных foods
-  const coinsRef = useRef([]) // Ref для актуальных coins
-  const cameraYRef = useRef(0) // Ref для актуальной cameraY
-  const livesRef = useRef(INITIAL_LIVES) // Ref для актуальных lives
-  const scoreRef = useRef(0) // Ref для актуального score
 
   // Reset game state
   const resetGame = useCallback(() => {
@@ -54,11 +49,6 @@ export function useFoodJumpLogic({ isActive, onGameEnd, onCoinsEarned }) {
     velocityRef.current = 0
     jumpCountRef.current = 0
     lastPlatformIdRef.current = null
-    foodsRef.current = []
-    coinsRef.current = []
-    cameraYRef.current = 0
-    livesRef.current = INITIAL_LIVES
-    scoreRef.current = 0
     setIsGameRunning(false)
   }, [])
 
@@ -80,50 +70,21 @@ export function useFoodJumpLogic({ isActive, onGameEnd, onCoinsEarned }) {
       })
     }
     setFoods(initialFoods)
-    foodsRef.current = initialFoods
     lastFoodYRef.current = 300 - 4 * FOOD_SPAWN_DISTANCE
   }, [resetGame])
-
-  // Синхронизируем refs с state
-  useEffect(() => {
-    foodsRef.current = foods
-  }, [foods])
-  
-  useEffect(() => {
-    coinsRef.current = coins
-  }, [coins])
-  
-  useEffect(() => {
-    cameraYRef.current = cameraY
-  }, [cameraY])
-  
-  useEffect(() => {
-    livesRef.current = lives
-  }, [lives])
-  
-  useEffect(() => {
-    scoreRef.current = score
-  }, [score])
 
   // Game loop
   useEffect(() => {
     if (!isGameRunning || !isActive) return
 
     const gameLoop = () => {
-      // Получаем актуальные значения из refs
-      const currentFoods = foodsRef.current
-      const currentCoins = coinsRef.current
-      const currentCameraY = cameraYRef.current
-      const currentLives = livesRef.current
-      const currentScore = scoreRef.current
-      
       // Обновляем физику
       velocityRef.current += GRAVITY
       playerYRef.current += velocityRef.current
       
       // Сбрасываем ID платформы, если игрок упал ниже всех платформ
-      if (currentFoods && currentFoods.length > 0) {
-        const lowestFood = Math.max(...currentFoods.map(f => f.y))
+      if (foods.length > 0) {
+        const lowestFood = Math.max(...foods.map(f => f.y))
         if (playerYRef.current > lowestFood + FOOD_HEIGHT + 50) {
           lastPlatformIdRef.current = null
         }
@@ -135,7 +96,7 @@ export function useFoodJumpLogic({ isActive, onGameEnd, onCoinsEarned }) {
       const playerLeft = playerCenterX - PLAYER_WIDTH / 2
       const playerRight = playerCenterX + PLAYER_WIDTH / 2
 
-      currentFoods.forEach((food) => {
+      foods.forEach((food) => {
         const foodTop = food.y
         const foodBottom = food.y + FOOD_HEIGHT
         const foodLeft = food.x
@@ -168,22 +129,18 @@ export function useFoodJumpLogic({ isActive, onGameEnd, onCoinsEarned }) {
               y: food.y - COIN_SIZE - 10,
               collected: false
             }
-            const newCoins = [...coinsRef.current, newCoin]
-            coinsRef.current = newCoins
-            setCoins(newCoins)
+            setCoins(prev => [...prev, newCoin])
             
-            scoreRef.current += 10
-            setScore(scoreRef.current) // Бонус к счету
+            setScore(prev => prev + 10) // Бонус к счету
           } else {
-            scoreRef.current += 5
-            setScore(scoreRef.current) // Обычный прыжок
+            setScore(prev => prev + 5) // Обычный прыжок
           }
         }
       })
 
       // Проверяем сбор монеток
       const coinsToRemove = []
-      currentCoins.forEach((coin) => {
+      coins.forEach((coin) => {
         if (!coin.collected) {
           const coinCenterX = coin.x + COIN_SIZE / 2
           const coinCenterY = coin.y + COIN_SIZE / 2
@@ -197,66 +154,48 @@ export function useFoodJumpLogic({ isActive, onGameEnd, onCoinsEarned }) {
             // Монетка собрана - даем 2 монетки
             coinsToRemove.push(coin.id)
             onCoinsEarned?.(2)
-            scoreRef.current += 20
-            setScore(scoreRef.current) // Бонус за монетку
+            setScore(prev => prev + 20) // Бонус за монетку
           }
         }
       })
       
       if (coinsToRemove.length > 0) {
-        const newCoins = coinsRef.current.filter(c => !coinsToRemove.includes(c.id))
-        coinsRef.current = newCoins
-        setCoins(newCoins)
+        setCoins(prev => prev.filter(c => !coinsToRemove.includes(c.id)))
       }
 
       // Обновляем камеру (следует за игроком вверх)
-      if (playerYRef.current < currentCameraY + 200) {
-        cameraYRef.current = playerYRef.current - 200
-        setCameraY(cameraYRef.current)
+      if (playerYRef.current < cameraY + 200) {
+        setCameraY(playerYRef.current - 200)
       }
 
       // Генерируем новые платформы из еды
-      if (currentFoods && currentFoods.length > 0) {
-        const highestFood = Math.min(...currentFoods.map(f => f.y))
-        if (currentCameraY - highestFood < 500) {
-          const newFood = {
-            id: Date.now(),
-            x: Math.random() * (400 - FOOD_WIDTH),
-            y: highestFood - FOOD_SPAWN_DISTANCE,
-            type: Math.floor(Math.random() * 4)
-          }
-          const newFoods = [...currentFoods, newFood]
-          foodsRef.current = newFoods
-          setFoods(newFoods)
+      const highestFood = Math.min(...foods.map(f => f.y))
+      if (cameraY - highestFood < 500) {
+        const newFood = {
+          id: Date.now(),
+          x: Math.random() * (400 - FOOD_WIDTH),
+          y: highestFood - FOOD_SPAWN_DISTANCE,
+          type: Math.floor(Math.random() * 4)
         }
+        setFoods(prev => [...prev, newFood])
       }
 
       // Удаляем еду и монетки ниже экрана
-      const filteredFoods = currentFoods.filter(f => f.y < currentCameraY + 600)
-      if (filteredFoods.length !== currentFoods.length) {
-        foodsRef.current = filteredFoods
-        setFoods(filteredFoods)
-      }
-      
-      const filteredCoins = currentCoins.filter(c => c.y < currentCameraY + 600)
-      if (filteredCoins.length !== currentCoins.length) {
-        coinsRef.current = filteredCoins
-        setCoins(filteredCoins)
-      }
+      setFoods(prev => prev.filter(f => f.y < cameraY + 600))
+      setCoins(prev => prev.filter(c => c.y < cameraY + 600))
 
       // Проверяем проигрыш (игрок упал слишком низко)
-      if (playerYRef.current > currentCameraY + 500) {
-        livesRef.current -= 1
-        const newLives = livesRef.current
+      if (playerYRef.current > cameraY + 500) {
+        const newLives = lives - 1
         setLives(newLives)
         
         if (newLives <= 0) {
           // Игра окончена
           setIsGameRunning(false)
-          onGameEnd?.(scoreRef.current)
+          onGameEnd?.(score)
         } else {
           // Возвращаем игрока выше
-          playerYRef.current = currentCameraY + 100
+          playerYRef.current = cameraY + 100
           velocityRef.current = 0
         }
       }
@@ -274,7 +213,7 @@ export function useFoodJumpLogic({ isActive, onGameEnd, onCoinsEarned }) {
         cancelAnimationFrame(animationFrameRef.current)
       }
     }
-  }, [isGameRunning, isActive])
+  }, [isGameRunning, isActive, foods, coins, cameraY, lives, score, onGameEnd, onCoinsEarned])
 
   // Управление (наклон влево/вправо)
   const handleKeyDown = useCallback((e) => {
