@@ -2,7 +2,7 @@
  * Компонент для авторизации через Google
  */
 
-import { useAuth } from '../contexts/AuthContext'
+import { useAuth } from '../../contexts/AuthContext'
 import './AuthButton.css'
 
 export function AuthButton() {
