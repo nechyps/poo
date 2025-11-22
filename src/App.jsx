@@ -10,6 +10,7 @@ import startButton from './assets/hud/buttons/button_start.PNG'
 function App() {
   const { isAuthenticated, loading: authLoading, error: authError } = useAuth()
   const [isGameStarted, setIsGameStarted] = useState(false)
+  const [showAuthScreen, setShowAuthScreen] = useState(false)
   const audio = useAudio()
 
   // Если критическая ошибка авторизации, показываем предупреждение но продолжаем работу
@@ -26,6 +27,11 @@ function App() {
       const hashParams = new URLSearchParams(window.location.hash.substring(1))
       if (hashParams.get('access_token')) {
         // OAuth callback обрабатывается автоматически Supabase
+        // После успешной авторизации запускаем игру
+        setTimeout(() => {
+          setShowAuthScreen(false)
+          setIsGameStarted(true)
+        }, 1000)
         // Очищаем hash из URL
         window.history.replaceState(null, '', window.location.pathname)
       }
@@ -35,16 +41,38 @@ function App() {
 
   const handleStartClick = () => {
     audio.playClickSound()
-    setIsGameStarted(true)
+    
+    // Если пользователь не авторизован, показываем экран авторизации
+    if (!isAuthenticated && !authLoading) {
+      setShowAuthScreen(true)
+    } else {
+      // Если авторизован, сразу запускаем игру
+      setIsGameStarted(true)
+    }
   }
 
   const handleLogout = () => {
     audio.playClickSound()
     setIsGameStarted(false)
+    setShowAuthScreen(false)
   }
 
-  // Показываем загрузку при проверке аутентификации
-  if (authLoading) {
+  const handleAuthSuccess = () => {
+    // После успешной авторизации запускаем игру
+    audio.playClickSound()
+    setShowAuthScreen(false)
+    setIsGameStarted(true)
+  }
+
+  const handleSkipAuth = () => {
+    // Пропускаем авторизацию и запускаем игру в гостевом режиме
+    audio.playClickSound()
+    setShowAuthScreen(false)
+    setIsGameStarted(true)
+  }
+
+  // Показываем загрузку только при первой проверке аутентификации
+  if (authLoading && !isGameStarted && !showAuthScreen) {
     return (
       <div className="app-container">
         <div className="phone-frame">
@@ -68,12 +96,12 @@ function App() {
     )
   }
 
-  // Показываем экран авторизации (опционально, можно убрать для гостевого режима)
-  // Для гостевого режима закомментируйте эту проверку
-  // if (!isAuthenticated) {
-  //   return <AuthScreen />
-  // }
+  // Показываем экран авторизации после нажатия Start, если не авторизован
+  if (showAuthScreen && !isAuthenticated) {
+    return <AuthScreen onAuthSuccess={handleAuthSuccess} onSkip={handleSkipAuth} />
+  }
 
+  // Показываем игру если начата
   if (isGameStarted) {
     return <Game onLogout={handleLogout} />
   }

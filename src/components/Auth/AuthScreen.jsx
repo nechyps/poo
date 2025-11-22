@@ -3,10 +3,21 @@
  * Показывается когда пользователь не авторизован
  */
 
+import { useEffect } from 'react'
+import { useAuth } from '../../contexts/AuthContext'
 import { AuthButton } from './AuthButton'
 import './AuthScreen.css'
 
-export function AuthScreen() {
+export function AuthScreen({ onAuthSuccess, onSkip }) {
+  const { isAuthenticated } = useAuth()
+
+  // Если пользователь авторизовался, вызываем callback
+  useEffect(() => {
+    if (isAuthenticated && onAuthSuccess) {
+      onAuthSuccess()
+    }
+  }, [isAuthenticated, onAuthSuccess])
+
   return (
     <div className="auth-screen">
       <div className="auth-screen-content">
@@ -15,6 +26,14 @@ export function AuthScreen() {
           Войдите с помощью Google, чтобы сохранять прогресс игры и играть на любом устройстве.
         </p>
         <AuthButton />
+        {onSkip && (
+          <button 
+            className="auth-skip-button"
+            onClick={onSkip}
+          >
+            Пропустить и играть без сохранения
+          </button>
+        )}
         <div className="auth-guest-note">
           <p>💡 Вы можете играть без входа, но прогресс не будет сохраняться</p>
         </div>

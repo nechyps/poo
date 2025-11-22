@@ -32,6 +32,29 @@
   margin-bottom: 32px;
 }
 
+.auth-skip-button {
+  margin-top: 16px;
+  padding: 12px 24px;
+  border: 2px solid rgba(102, 126, 234, 0.3);
+  border-radius: 8px;
+  background: transparent;
+  color: #667eea;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  width: 100%;
+}
+
+.auth-skip-button:hover {
+  background: rgba(102, 126, 234, 0.1);
+  border-color: rgba(102, 126, 234, 0.5);
+}
+
+.auth-skip-button:active {
+  transform: scale(0.98);
+}
+
 .auth-guest-note {
   margin-top: 24px;
   padding: 16px;
