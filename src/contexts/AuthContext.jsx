@@ -43,8 +43,12 @@ export function AuthProvider({ children }) {
     try {
       const {
         data: { subscription: sub },
-      } = supabase.auth.onAuthStateChange((_event, session) => {
+      } = supabase.auth.onAuthStateChange((event, session) => {
         if (!mounted) return
+        console.log('Auth state changed:', event, { 
+          userId: session?.user?.id, 
+          email: session?.user?.email 
+        })
         setSession(session)
         setUser(session?.user ?? null)
         setLoading(false)
@@ -73,10 +77,16 @@ export function AuthProvider({ children }) {
       setLoading(true)
       setError(null)
       
+      // Получаем текущий URL динамически (работает и на localhost, и на production)
+      // Всегда используем текущий URL страницы, без хардкода
+      const redirectUrl = typeof window !== 'undefined' 
+        ? `${window.location.protocol}//${window.location.host}${window.location.pathname}`
+        : ''
+      
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}`,
+          redirectTo: redirectUrl,
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',

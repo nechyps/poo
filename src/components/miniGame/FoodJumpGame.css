@@ -1,0 +1,107 @@
+.food-jump-game {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 50;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(2px);
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+}
+
+.food-jump-game .mini-game-close-button {
+  position: absolute;
+  top: max(var(--spacing-md), env(safe-area-inset-top, 20px));
+  right: max(var(--spacing-md), env(safe-area-inset-right, 20px));
+  width: var(--btn-size-sm);
+  height: var(--btn-size-sm);
+  padding: 0;
+  border: none;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s;
+}
+
+.food-jump-game .mini-game-close-button:hover {
+  background: rgba(255, 255, 255, 1);
+  transform: scale(1.1);
+  box-shadow: var(--shadow-md);
+}
+
+.food-jump-game .mini-game-close-button:active {
+  transform: scale(0.95);
+}
+
+.food-jump-game .mini-game-close-button img {
+  width: 50%;
+  height: 50%;
+  object-fit: contain;
+}
+
+.food-jump-game .game-hud {
+  position: absolute;
+  top: max(60px, 10vh);
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-around;
+  padding: var(--spacing-sm) var(--spacing-md);
+  z-index: 51;
+  pointer-events: none;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.food-jump-game .hud-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.9);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+  min-width: 80px;
+}
+
+.food-jump-game .hud-label {
+  font-size: var(--font-xs);
+  color: #666;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.food-jump-game .hud-value {
+  font-size: var(--font-lg);
+  font-weight: 700;
+  color: #ff88b5;
+  line-height: 1;
+}
+
+.food-jump-game .hud-value.lives {
+  color: #ff4444;
+}
+
+.food-jump-game .hud-value.score {
+  color: #ff88b5;
+}
+
+.food-jump-game .game-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  background: linear-gradient(180deg, #87CEEB 0%, #E0F6FF 100%);
+}
+
