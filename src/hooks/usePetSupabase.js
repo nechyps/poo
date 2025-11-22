@@ -29,9 +29,12 @@ export function usePet() {
   const [lastSaveTime, setLastSaveTime] = useState(null)
   const autoSaveTimeoutRef = useRef(null)
 <<<<<<< HEAD
+<<<<<<< HEAD
   const lastUserIdRef = useRef(null)
   
 =======
+=======
+>>>>>>> parent of 7481958 (doodle jump)
 
 >>>>>>> parent of 7481958 (doodle jump)
   /**
@@ -85,6 +88,7 @@ export function usePet() {
   // Загружаем питомца при изменении пользователя
   useEffect(() => {
 <<<<<<< HEAD
+<<<<<<< HEAD
     // Ждем завершения проверки авторизации перед загрузкой
     if (authLoading) {
       return
@@ -102,6 +106,10 @@ export function usePet() {
       lastUserIdRef.current = null
     }
   }, [authLoading, userId, isAuthenticated, user, loadPet, pet])
+=======
+    loadPet()
+  }, [loadPet])
+>>>>>>> parent of 7481958 (doodle jump)
 =======
     loadPet()
   }, [loadPet])
