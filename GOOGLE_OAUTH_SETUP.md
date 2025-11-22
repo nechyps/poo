@@ -28,24 +28,16 @@
    https://YOUR_PROJECT_REF.supabase.co/auth/v1/callback
    ```
    Замените `YOUR_PROJECT_REF` на ваш Project Reference из Supabase
-   
-   **Важно:** Это должен быть URL Supabase, а не URL вашего деплоя. 
-   Supabase обработает OAuth callback и затем перенаправит на ваш сайт автоматически.
 7. Сохраните **Client ID** и **Client Secret**
 
 #### В Supabase Dashboard:
 
-1. Перейдите в **Authentication** → **URL Configuration**
-2. Установите **Site URL** на URL вашего деплоя (например: `https://your-app.vercel.app`)
-3. Добавьте ваш production URL в **Redirect URLs** (например: `https://your-app.vercel.app/*`)
-4. Перейдите в **Authentication** → **Providers**
-5. Найдите **Google** и включите его
-6. Вставьте:
+1. Перейдите в **Authentication** → **Providers**
+2. Найдите **Google** и включите его
+3. Вставьте:
    - **Client ID** (из Google Cloud Console)
    - **Client Secret** (из Google Cloud Console)
-7. Сохраните изменения
-
-**Важно:** Site URL и Redirect URLs должны указывать на ваш production домен, а не на localhost.
+4. Сохраните изменения
 
 ### 3. Выполнение миграции базы данных
 

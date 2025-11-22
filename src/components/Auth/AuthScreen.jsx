@@ -9,19 +9,14 @@ import { AuthButton } from './AuthButton'
 import './AuthScreen.css'
 
 export function AuthScreen({ onAuthSuccess, onSkip }) {
-  const { isAuthenticated, userId, user, loading: authLoading } = useAuth()
+  const { isAuthenticated } = useAuth()
 
   // Если пользователь авторизовался, вызываем callback
   useEffect(() => {
-    console.log('AuthScreen: Auth state', { isAuthenticated, userId, user: user?.email, authLoading })
-    if (!authLoading && isAuthenticated && userId && onAuthSuccess) {
-      console.log('AuthScreen: User authenticated, calling onAuthSuccess')
-      // Небольшая задержка чтобы убедиться что состояние обновилось везде
-      setTimeout(() => {
-        onAuthSuccess()
-      }, 500)
+    if (isAuthenticated && onAuthSuccess) {
+      onAuthSuccess()
     }
-  }, [isAuthenticated, userId, user, authLoading, onAuthSuccess])
+  }, [isAuthenticated, onAuthSuccess])
 
   return (
     <div className="auth-screen">
