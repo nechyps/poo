@@ -43,8 +43,8 @@ function App() {
     setIsGameStarted(false)
   }
 
-  // Показываем загрузку при проверке аутентификации (только если authContext доступен)
-  if (authContext && authLoading) {
+  // Показываем загрузку при проверке аутентификации
+  if (authLoading) {
     return (
       <div className="app-container">
         <div className="phone-frame">
