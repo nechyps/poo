@@ -28,25 +28,38 @@ export function usePet() {
   const [error, setError] = useState(null)
   const [lastSaveTime, setLastSaveTime] = useState(null)
   const autoSaveTimeoutRef = useRef(null)
-  const lastUserIdRef = useRef(null)
   
+  // Логирование для отладки и перезагрузка при изменении авторизации
+  useEffect(() => {
+    const currentUserId = user?.id || userId
+    const currentIsAuthenticated = !!user || isAuthenticated
+    
+    console.log('usePet: Auth state changed', { 
+      isAuthenticated: currentIsAuthenticated, 
+      userId: currentUserId, 
+      user: user?.email,
+      authLoading,
+      hasPet: !!pet
+    })
+    
+    // Если авторизация завершилась и пользователь авторизован, перезагружаем питомца
+    if (!authLoading && currentIsAuthenticated && currentUserId) {
+      // Если питомца еще нет или он был создан для другого пользователя, загружаем заново
+      if (!pet || (pet && !pet.userId)) {
+        console.log('usePet: User authenticated, loading pet for userId:', currentUserId)
+        loadPet()
+      }
+    }
+  }, [isAuthenticated, userId, user, authLoading, pet, loadPet])
+
   /**
    * Загрузка питомца из Supabase
    */
   const loadPet = useCallback(async () => {
-    const currentUserId = user?.id || userId
-    const currentIsAuthenticated = !!user || isAuthenticated
-    
-    if (!currentIsAuthenticated || !currentUserId) {
+    if (!isAuthenticated || !userId) {
       // Если пользователь не авторизован, используем временное состояние
       setPet(DEFAULT_PET_DATA)
       setIsLoading(false)
-      lastUserIdRef.current = null
-      return
-    }
-
-    // Если пользователь не изменился и питомец уже загружен, не перезагружаем
-    if (lastUserIdRef.current === currentUserId && pet) {
       return
     }
 
@@ -54,29 +67,27 @@ export function usePet() {
       setIsLoading(true)
       setError(null)
 
-      let petData = await getPetSave(currentUserId)
+      let petData = await getPetSave(userId)
 
       if (!petData) {
         // Создаем нового питомца если сохранения нет
-        petData = await createPet(currentUserId, DEFAULT_PET_DATA)
-        console.log('Создан новый питомец для пользователя:', currentUserId)
+        petData = await createPet(userId, DEFAULT_PET_DATA)
+        console.log('Создан новый питомец для пользователя:', userId)
       } else {
         console.log('Загружен существующий питомец')
       }
 
       setPet(petData)
       setLastSaveTime(Date.now())
-      lastUserIdRef.current = currentUserId
     } catch (err) {
       console.error('Ошибка загрузки питомца:', err)
       setError(err.message)
       // Используем дефолтные значения при ошибке
       setPet(DEFAULT_PET_DATA)
-      lastUserIdRef.current = null
     } finally {
       setIsLoading(false)
     }
-  }, [userId, isAuthenticated, user, pet])
+  }, [userId, isAuthenticated])
 
   // Загружаем питомца при изменении пользователя или завершении загрузки авторизации
   useEffect(() => {
@@ -84,19 +95,8 @@ export function usePet() {
     if (authLoading) {
       return
     }
-    
-    const currentUserId = user?.id || userId
-    const currentIsAuthenticated = !!user || isAuthenticated
-    
-    // Загружаем только если пользователь авторизован и изменился
-    if (currentIsAuthenticated && currentUserId && lastUserIdRef.current !== currentUserId) {
-      loadPet()
-    } else if (!currentIsAuthenticated && pet) {
-      // Если пользователь вышел, сбрасываем питомца
-      setPet(DEFAULT_PET_DATA)
-      lastUserIdRef.current = null
-    }
-  }, [authLoading, userId, isAuthenticated, user, loadPet, pet])
+    loadPet()
+  }, [loadPet, authLoading])
 
   /**
    * Сохранение статистики питомца в Supabase
@@ -279,10 +279,7 @@ export function usePet() {
 
   // Автосохранение при изменении питомца (для авторизованных пользователей)
   useEffect(() => {
-    const currentUserId = user?.id || userId
-    const currentIsAuthenticated = !!user || isAuthenticated
-    
-    if (!currentIsAuthenticated || !currentUserId || !pet || isLoading) return
+    if (!isAuthenticated || !userId || !pet || isLoading) return
 
     // Очищаем предыдущий таймаут
     if (autoSaveTimeoutRef.current) {
@@ -292,15 +289,7 @@ export function usePet() {
     // Сохраняем через 2 секунды после последнего изменения
     autoSaveTimeoutRef.current = setTimeout(async () => {
       try {
-        const stats = {
-          hunger: pet.hunger,
-          happiness: pet.happiness,
-          energy: pet.energy,
-          cleanliness: pet.cleanliness,
-          health: pet.health,
-          coins: pet.coins,
-        }
-        await savePetStats(stats)
+        await savePetStats(pet)
       } catch (err) {
         console.error('Ошибка автосохранения:', err)
       }
@@ -311,7 +300,7 @@ export function usePet() {
         clearTimeout(autoSaveTimeoutRef.current)
       }
     }
-  }, [pet?.hunger, pet?.happiness, pet?.energy, pet?.cleanliness, pet?.health, pet?.coins, userId, isAuthenticated, isLoading, savePetStats, user])
+  }, [pet, userId, isAuthenticated, isLoading, savePetStats])
 
   return {
     pet,
