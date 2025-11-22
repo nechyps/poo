@@ -1,74 +1,42 @@
 .app-container {
-  min-height: 100vh;
+  width: 100%;
+  height: 100%;
+  background: #000;
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #f5f5f5;
-  padding: 0;
+  overflow: hidden;
 }
 
-/* Основной контейнер приложения */
 .phone-frame {
   width: 100%;
-  height: 100vh;
+  height: 100%;
   background: #ffffff;
-  border-radius: 0;
-  padding: 0;
-  box-shadow: none;
   position: relative;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+  /* Ограничиваем максимальную ширину сцены на ultrawide мониторах */
+  max-width: 1920px; 
+  margin: 0 auto;
+  box-shadow: var(--shadow-lg);
 }
 
-/* Экран приложения */
 .phone-screen {
   flex: 1;
-  background: #ffffff;
-  border-radius: 0;
-  overflow: hidden;
-  position: relative;
-}
-
-/* Desktop версия - полноэкранный режим без рамок */
-@media (min-width: 769px) {
-  .app-container {
-    background: #ffffff;
-  }
-  
-  .phone-frame {
-    width: 100%;
-    height: 100vh;
-    border-radius: 0;
-    box-shadow: none;
-    max-width: 100%;
-    max-height: 100%;
-  }
-  
-  .phone-screen {
-    border-radius: 0;
-  }
-}
-
-/* Контент приложения */
-.content {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  padding: 0;
-  position: relative;
-  overflow: hidden;
-}
-
-.menu-background {
-  position: absolute;
-  top: 0;
-  left: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  z-index: 1;
+  position: relative;
+  overflow: hidden;
 }
 
+.content {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.menu-background,
 .game-background {
   position: absolute;
   top: 0;
@@ -77,76 +45,29 @@
   height: 100%;
   object-fit: cover;
   z-index: 1;
+  pointer-events: none;
 }
 
-/* Кнопка burger в левом верхнем углу */
-.burger-button {
+/* Меню старта игры */
+.buttons-container {
   position: absolute;
-  top: 20px;
-  left: 20px;
-  width: 48px;
-  height: 48px;
-  cursor: pointer;
-  z-index: 6;
-  transition: all 0.2s;
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 12px;
-  padding: 8px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.burger-button img {
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
-  object-fit: contain;
-}
-
-.burger-button:hover {
-  transform: scale(1.08);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
-  background: rgba(255, 255, 255, 1);
-}
-
-.burger-button:active {
-  transform: scale(0.98);
-}
-
-/* Desktop: увеличиваем burger-кнопку */
-@media (min-width: 769px) {
-  .burger-button {
-    width: 68px;
-    height: 68px;
-    top: 28px;
-    left: 28px;
-    padding: 10px;
-  }
-}
-
-/* Stats styles moved to component CSS files */
-
-/* Character, Food, and Button styles moved to component CSS files */
-
-/* Menu styles moved to component CSS files */
-
-.buttons-container {
-  background: transparent;
-  position: relative;
   z-index: 2;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100%;
-  padding: 0 24px;
+  padding-bottom: 10vh;
 }
 
 .start-button {
-  width: auto;
-  max-width: 200px;
+  width: clamp(120px, 30vw, 240px);
+  height: auto;
   cursor: pointer;
-  transition: transform 0.2s;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
 }
 
 .start-button:hover {
@@ -154,35 +75,41 @@
 }
 
 .start-button:active {
-  transform: translateY(-2px);
+  transform: scale(0.95);
 }
 
-h1 {
-  color: #ff0062;
-  font-size: 28px;
-  font-weight: 700;
-  margin-bottom: 25px;
-  text-align: center;
+.burger-button {
+  position: absolute;
+  /* Учитываем безопасные зоны iPhone */
+  top: max(var(--spacing-sm), env(safe-area-inset-top, 20px)); 
+  left: max(var(--spacing-sm), env(safe-area-inset-left, 20px));
+  width: var(--btn-size-md);
+  height: var(--btn-size-md);
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.2s;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(4px);
+  border-radius: 16px;
+  padding: 10%;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* Адаптивность для мобильных экранов */
-@media (max-width: 768px) {
-  .app-container {
-    background: #ffffff;
-    padding: 0;
-  }
-  
-  .phone-frame {
-    width: 100%;
-    height: 100vh;
-    border-radius: 0;
-  }
-  
-  .burger-button {
-    top: 12px;
-    left: 12px;
-    width: 44px;
-    height: 44px;
-  }
+.burger-button:hover {
+  transform: scale(1.08);
+  background: rgba(255, 255, 255, 1);
+  box-shadow: var(--shadow-md);
 }
 
+.burger-button:active {
+  transform: scale(0.95);
+}
+
+.burger-button img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}

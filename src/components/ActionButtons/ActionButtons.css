@@ -1,33 +1,42 @@
 .bottom-buttons {
   position: absolute;
-  bottom: 50px;
+  bottom: max(var(--spacing-md), env(safe-area-inset-bottom, 20px));
   left: 50%;
   transform: translateX(-50%);
   display: flex;
-  gap: 15px;
+  gap: var(--spacing-md);
   z-index: 3;
+  width: 100%;
+  max-width: 600px; /* Ограничиваем ширину, чтобы кнопки не разлетались */
+  justify-content: center;
+  padding: 0 var(--spacing-sm);
 }
 
 .bottom-button {
-  width: 70px;
-  height: 70px;
+  width: var(--btn-size-lg);
+  height: var(--btn-size-lg);
   padding: 0;
   border: none;
   background: transparent;
   cursor: pointer;
-  transition: transform 0.2s;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
   display: flex;
   align-items: center;
   justify-content: center;
+  /* Убедимся, что тач-зона всегда достаточная, даже если визуально кнопка меньше */
+  min-width: 44px; 
+  min-height: 44px;
 }
 
 .bottom-button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  filter: grayscale(1);
 }
 
 .bottom-button:not(:disabled):hover {
-  transform: scale(1.1);
+  transform: scale(1.15);
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
 }
 
 .bottom-button:not(:disabled):active {
@@ -39,17 +48,3 @@
   height: 100%;
   object-fit: contain;
 }
-
-/* Desktop: увеличиваем кнопки действий */
-@media (min-width: 769px) {
-  .bottom-buttons {
-    bottom: 60px;
-    gap: 20px;
-  }
-  
-  .bottom-button {
-    width: 90px;
-    height: 90px;
-  }
-}
-

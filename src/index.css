@@ -1,7 +1,35 @@
+:root {
+  /* Типографика */
+  --font-xs: clamp(10px, 1vw + 0.5rem, 12px);
+  --font-sm: clamp(12px, 1.2vw + 0.5rem, 14px);
+  --font-md: clamp(14px, 1.5vw + 0.5rem, 16px);
+  --font-lg: clamp(16px, 2vw + 0.5rem, 20px);
+  --font-xl: clamp(20px, 3vw + 0.5rem, 28px);
+  --font-xxl: clamp(24px, 4vw + 0.5rem, 36px);
+
+  /* Отступы и размеры UI */
+  --spacing-xs: clamp(4px, 1vw, 8px);
+  --spacing-sm: clamp(8px, 2vw, 16px);
+  --spacing-md: clamp(16px, 3vw, 24px);
+  --spacing-lg: clamp(24px, 4vw, 32px);
+  
+  /* Размеры кнопок */
+  --btn-size-sm: clamp(36px, 8vw, 48px);
+  --btn-size-md: clamp(48px, 12vw, 64px);
+  --btn-size-lg: clamp(60px, 15vw, 96px);
+
+  /* Цвета */
+  --color-bg: #f0f2f5;
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.15);
+  --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.25);
+}
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent; /* Убираем подсветку при тапе на мобильных */
 }
 
 body {
@@ -12,11 +40,18 @@ body {
   -moz-osx-font-smoothing: grayscale;
   margin: 0;
   padding: 0;
+  overflow: hidden; /* Предотвращаем скролл баунс на мобильных */
+  background: var(--color-bg);
+  height: 100vh;
+  width: 100vw;
+  user-select: none; /* Запрет выделения текста для ощущения приложения */
 }
 
 #root {
   width: 100%;
-  min-height: 100vh;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 @keyframes spin {
