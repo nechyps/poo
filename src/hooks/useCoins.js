@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { usePet } from './usePet'
+import { usePet } from './usePetSupabase'
 
 export function useCoins() {
   const { pet, savePetStats } = usePet()

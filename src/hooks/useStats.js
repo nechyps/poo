@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { usePet } from './usePet'
+import { usePet } from './usePetSupabase'
 
 const AUTO_SAVE_INTERVAL = 30000 // 30 seconds
 

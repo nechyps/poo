@@ -1,4 +1,5 @@
 import './Menu.css'
+import { UserProfile } from '../Auth/UserProfile'
 import settings from '../../assets/hud/settings.PNG'
 import buttonLogout from '../../assets/hud/buttons/button_logout.PNG'
 import buttonCross from '../../assets/hud/buttons/button_cross.PNG'
@@ -71,6 +72,11 @@ function Menu({
         </div>
 
         <div className="menu-scroll">
+          {/* Профиль пользователя */}
+          <section className="menu-section">
+            <UserProfile />
+          </section>
+
           {sections.map((section) => (
             <section className="menu-section" key={section.title}>
               <div className="menu-section__head">
