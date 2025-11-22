@@ -15,11 +15,11 @@
 .play-button {
   background: linear-gradient(135deg, #ffd700 0%, #ffed4e 50%, #ffc107 100%);
   border: 2px solid rgba(255, 255, 255, 0.95);
-  border-radius: 16px;
+  border-radius: 14px;
   
-  /* Уменьшенный размер */
-  width: clamp(100px, 15vw, 140px);
-  padding: 10px 12px;
+  /* Еще более компактный размер */
+  width: clamp(95px, 14vw, 130px);
+  padding: 8px 10px;
   
   color: #1a1a1a;
   cursor: pointer;
@@ -31,7 +31,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 3px;
+  gap: 2px;
   transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
   animation: playButtonPulse 2s ease-in-out infinite;
   position: relative;
@@ -72,15 +72,16 @@
 }
 
 .play-text {
-  font-size: clamp(10px, 2vw, 13px);
+  font-size: clamp(9px, 1.6vw, 11px);
   font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.2px;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
   color: #1a1a1a;
   text-align: center;
   white-space: nowrap;
-  line-height: 1.2;
+  line-height: 1.1;
+  transform: scale(0.95); /* Дополнительное сжатие */
 }
 
 .play-reward {
@@ -170,7 +171,12 @@
   }
   
   .play-button {
-    width: 90px;
-    padding: 8px 10px;
+    width: 85px;
+    padding: 6px 8px;
+  }
+  
+  .play-text {
+    font-size: 8px;
+    letter-spacing: 0.1px;
   }
 }
