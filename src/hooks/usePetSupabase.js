@@ -22,14 +22,18 @@ const DEFAULT_PET_DATA = {
  * @returns {Object} Объект с данными питомца и функциями для работы с ним
  */
 export function usePet() {
-  const { user, userId, isAuthenticated, loading: authLoading } = useAuth()
+  const { user, userId, isAuthenticated } = useAuth()
   const [pet, setPet] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
   const [lastSaveTime, setLastSaveTime] = useState(null)
   const autoSaveTimeoutRef = useRef(null)
+<<<<<<< HEAD
   const lastUserIdRef = useRef(null)
   
+=======
+
+>>>>>>> parent of 7481958 (doodle jump)
   /**
    * Загрузка питомца из Supabase
    */
@@ -78,8 +82,9 @@ export function usePet() {
     }
   }, [userId, isAuthenticated, user, pet])
 
-  // Загружаем питомца при изменении пользователя или завершении загрузки авторизации
+  // Загружаем питомца при изменении пользователя
   useEffect(() => {
+<<<<<<< HEAD
     // Ждем завершения проверки авторизации перед загрузкой
     if (authLoading) {
       return
@@ -97,21 +102,16 @@ export function usePet() {
       lastUserIdRef.current = null
     }
   }, [authLoading, userId, isAuthenticated, user, loadPet, pet])
+=======
+    loadPet()
+  }, [loadPet])
+>>>>>>> parent of 7481958 (doodle jump)
 
   /**
    * Сохранение статистики питомца в Supabase
    */
   const savePetStats = useCallback(async (stats) => {
-    // Получаем актуальный userId
-    const currentUserId = user?.id || userId
-    const currentIsAuthenticated = !!user || isAuthenticated
-    
-    if (!currentIsAuthenticated || !currentUserId) {
-      console.warn('savePetStats: User not authenticated', { 
-        isAuthenticated: currentIsAuthenticated, 
-        userId: currentUserId,
-        user 
-      })
+    if (!isAuthenticated || !userId) {
       // Если не авторизован, только обновляем локальное состояние
       setPet(prev => ({
         ...prev,
@@ -126,8 +126,7 @@ export function usePet() {
     }
 
     try {
-      console.log('savePetStats: Saving with userId', currentUserId)
-      const updatedData = await updatePetStats(currentUserId, stats)
+      const updatedData = await updatePetStats(userId, stats)
       setPet(updatedData)
       setLastSaveTime(Date.now())
       console.log('Статистика питомца сохранена')
@@ -142,42 +141,16 @@ export function usePet() {
       setError(err.message)
       return false
     }
-  }, [pet, userId, user, isAuthenticated])
+  }, [pet, userId, isAuthenticated])
 
   /**
    * Ручное сохранение
    */
   const manualSave = useCallback(async () => {
-    // Получаем свежие данные авторизации
-    const currentUserId = user?.id || userId
-    const currentIsAuthenticated = !!user || isAuthenticated
-    
-    // Проверяем авторизацию с логированием
-    console.log('manualSave: Checking auth', { 
-      isAuthenticated: currentIsAuthenticated, 
-      userId: currentUserId, 
-      user: user?.email,
-      authLoading,
-      hasUser: !!user,
-      hasUserId: !!userId
-    })
-    
-    if (authLoading) {
+    if (!isAuthenticated || !userId) {
       return { 
         success: false, 
-        message: 'Проверка авторизации... Подождите.' 
-      }
-    }
-    
-    if (!currentIsAuthenticated || !currentUserId) {
-      console.warn('manualSave: User not authenticated', { 
-        isAuthenticated: currentIsAuthenticated, 
-        userId: currentUserId,
-        user 
-      })
-      return { 
-        success: false, 
-        message: 'Войдите в систему для сохранения игры. Перезагрузите страницу после входа.' 
+        message: 'Войдите в систему для сохранения игры' 
       }
     }
 
@@ -186,9 +159,6 @@ export function usePet() {
     }
 
     try {
-      // Используем актуальный userId
-      const currentUserId = user?.id || userId
-      
       const stats = {
         hunger: pet.hunger,
         happiness: pet.happiness,
@@ -219,7 +189,7 @@ export function usePet() {
         message: err.message || 'Не удалось сохранить игру' 
       }
     }
-  }, [pet, userId, isAuthenticated, authLoading, user, savePetStats, lastSaveTime])
+  }, [pet, userId, isAuthenticated, savePetStats, lastSaveTime])
 
   /**
    * Ручная загрузка
