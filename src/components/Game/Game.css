@@ -1,11 +1,12 @@
+/* Стили для игрового фона наследуются из App.css */
+/* Дополнительные стили только для специфичных случаев игры */
 .game-background {
+  /* Убеждаемся, что фон всегда заполняет весь экран */
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  z-index: 1;
+  right: 0;
+  bottom: 0;
 }
 
 /* Burger button styles moved to App.css for consistency */

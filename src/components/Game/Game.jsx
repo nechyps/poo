@@ -29,19 +29,52 @@ const MEALS = [
 ]
 
 const MESSAGES = {
-  feed: ['Вкусно!', 'Вкуснятина!', 'Спасибо!', 'Ммм...'],
-  sleep: ['Спокойной ночи...', 'Хррр...', 'Сонно...'],
-  play: ['Ура!', 'Весело!', 'Уиии!'],
-  clean: ['Свежо!', 'Чисто!', 'Ах...'],
-  hungry: ['Я голоден!', 'Покорми меня!', 'Голодный...'],
-  tired: ['Я устал!', 'Нужен сон...', 'Сонный...'],
-  sad: ['Мне грустно...', 'Помоги мне...', 'Плохо себя чувствую...'],
-  happy: ['Счастлив!', 'Отлично!', 'Замечательно!']
+  feed: [
+    'Вкусно!', 'Вкуснятина!', 'Спасибо!', 'Ммм...', 
+    'Объедение!', 'Так вкусно!', 'Ням-ням!', 'Спасибо за еду!',
+    'Это моё любимое!', 'Как аппетитно!', 'Восхитительно!', 'Обожаю!'
+  ],
+  sleep: [
+    'Спокойной ночи...', 'Хррр...', 'Сонно...', 
+    'Хочу спать...', 'Устал...', 'Пора отдохнуть...',
+    'Сладких снов...', 'Зевает...', 'Глазки закрываются...', 'Так устал...'
+  ],
+  play: [
+    'Ура!', 'Весело!', 'Уиии!', 
+    'Как здорово!', 'Это весело!', 'Давай ещё!', 'Круто!',
+    'Обожаю играть!', 'Вот это да!', 'Невероятно!', 'Супер!'
+  ],
+  clean: [
+    'Свежо!', 'Чисто!', 'Ах...', 
+    'Как приятно!', 'Спасибо!', 'Теперь хорошо!', 'Чистенько!',
+    'Блестит!', 'Ароматно!', 'Так свежо!', 'Отлично!'
+  ],
+  hungry: [
+    'Я голоден!', 'Покорми меня!', 'Голодный...', 
+    'Хочу есть!', 'Живот урчит...', 'Очень голоден!', 'Нужна еда!',
+    'Покорми, пожалуйста!', 'Голод как волк!', 'Есть хочу!', 'Жрать охота!'
+  ],
+  tired: [
+    'Я устал!', 'Нужен сон...', 'Сонный...', 
+    'Силы на исходе...', 'Хочу спать!', 'Очень устал...', 'Нет сил...',
+    'Глаза слипаются...', 'Нужен отдых...', 'Усталость...', 'Пора в кровать...'
+  ],
+  sad: [
+    'Мне грустно...', 'Помоги мне...', 'Плохо себя чувствую...', 
+    'Не очень хорошо...', 'Грустно...', 'Плохое настроение...', 'Тоскливо...',
+    'Нужна помощь...', 'Не весело...', 'Печально...', 'Хочется внимания...'
+  ],
+  happy: [
+    'Счастлив!', 'Отлично!', 'Замечательно!', 
+    'Прекрасно!', 'Всё супер!', 'Жизнь удалась!', 'Как хорошо!',
+    'Всё отлично!', 'Настроение на высоте!', 'Радостно!', 'Всё замечательно!'
+  ]
 }
 
 function Game({ onLogout }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [currentBackground, setCurrentBackground] = useState(gameBackground)
+  const [backgroundKey, setBackgroundKey] = useState(0) // Ключ для принудительного обновления
   const [selectedFood, setSelectedFood] = useState(null)
   const [isFoodFlying, setIsFoodFlying] = useState(false)
   const [message, setMessage] = useState('')
@@ -143,11 +176,13 @@ function Game({ onLogout }) {
       // If mini-game is active, just reset background
       setCurrentBackground(gameBackground)
       setIsNightMode(false)
+      setBackgroundKey(prev => prev + 1) // Принудительное обновление изображения
       return
     }
     // Reset to day background
     setCurrentBackground(gameBackground)
     setIsNightMode(false)
+    setBackgroundKey(prev => prev + 1) // Принудительное обновление изображения
     resetToNormal()
   }
 
@@ -214,8 +249,11 @@ function Game({ onLogout }) {
     if (isAnimating) return
     
     audio.playClickSound()
+    
+    // Сначала меняем фон, затем выполняем действие
     setCurrentBackground(nightBackground)
     setIsNightMode(true)
+    setBackgroundKey(prev => prev + 1) // Принудительное обновление изображения
     
     performCharacterAction('sleep', () => {
       performAction('sleep')
@@ -225,6 +263,7 @@ function Game({ onLogout }) {
       setTimeout(() => {
         setCurrentBackground(gameBackground)
         setIsNightMode(false)
+        setBackgroundKey(prev => prev + 1) // Принудительное обновление изображения
         resetToNormal()
       }, 5000)
     })
@@ -269,8 +308,9 @@ function Game({ onLogout }) {
         <div className="phone-screen">
           <div className="content">
             <img 
+              key={`bg-${backgroundKey}-${isNightMode ? 'night' : 'day'}`}
               src={currentBackground} 
-              alt="Game Background" 
+              alt={isNightMode ? "Night Background" : "Game Background"} 
               className="game-background" 
             />
             

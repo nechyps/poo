@@ -23,17 +23,29 @@
 
 .phone-screen {
   flex: 1;
-  width: 100%;
-  height: 100%;
   position: relative;
   overflow: hidden;
   background: #000000; /* Черный фон для предотвращения белых краев */
+  /* Поддержка safe-area */
+  width: 100%;
+  height: 100%;
+  /* Минимальные размеры для предотвращения сжатия */
+  min-width: 100%;
+  min-height: 100%;
 }
 
 .content {
-  width: 100%;
-  height: 100%;
   position: relative;
+  /* Поддержка safe-area */
+  width: calc(100% - env(safe-area-inset-left, 0) - env(safe-area-inset-right, 0));
+  height: calc(100% - env(safe-area-inset-top, 0) - env(safe-area-inset-bottom, 0));
+  margin-left: env(safe-area-inset-left, 0);
+  margin-right: env(safe-area-inset-right, 0);
+  margin-top: env(safe-area-inset-top, 0);
+  margin-bottom: env(safe-area-inset-bottom, 0);
+  /* Минимальные размеры */
+  min-width: 100%;
+  min-height: 100%;
 }
 
 .menu-background,
@@ -41,15 +53,137 @@
   position: absolute;
   top: 0;
   left: 0;
+  right: 0;
+  bottom: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center;
+  object-position: center center;
   z-index: 1;
   pointer-events: none;
   /* Принудительное растягивание для заполнения всего экрана */
   min-width: 100%;
   min-height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  /* Плавная смена фона */
+  transition: opacity 0.3s ease-in-out;
+  opacity: 1;
+  /* Оптимизация для разных устройств */
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  image-rendering: high-quality;
+  /* Плавное масштабирование */
+  transform: translateZ(0);
+  will-change: transform, opacity;
+  /* Предотвращение размытия на высоких DPI */
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+/* Адаптивность для портретной ориентации */
+@media (orientation: portrait) {
+  .menu-background,
+  .game-background {
+    object-fit: cover;
+    object-position: center center;
+  }
+}
+
+/* Адаптивность для ландшафтной ориентации */
+@media (orientation: landscape) {
+  .menu-background,
+  .game-background {
+    object-fit: cover;
+    object-position: center center;
+  }
+}
+
+/* Очень маленькие экраны (до 320px) */
+@media (max-width: 320px) {
+  .menu-background,
+  .game-background {
+    object-fit: cover;
+    object-position: center center;
+    min-width: 100vw;
+    min-height: 100vh;
+  }
+}
+
+/* Маленькие экраны (320px - 480px) */
+@media (min-width: 320px) and (max-width: 480px) {
+  .menu-background,
+  .game-background {
+    object-fit: cover;
+    object-position: center center;
+  }
+}
+
+/* Средние экраны (480px - 768px) */
+@media (min-width: 480px) and (max-width: 768px) {
+  .menu-background,
+  .game-background {
+    object-fit: cover;
+    object-position: center center;
+  }
+}
+
+/* Планшеты (768px - 1024px) */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .menu-background,
+  .game-background {
+    object-fit: cover;
+    object-position: center center;
+  }
+}
+
+/* Большие экраны (1024px - 1920px) */
+@media (min-width: 1024px) and (max-width: 1920px) {
+  .menu-background,
+  .game-background {
+    object-fit: cover;
+    object-position: center center;
+    max-width: 100%;
+    max-height: 100%;
+  }
+}
+
+/* Очень большие экраны (от 1920px) */
+@media (min-width: 1920px) {
+  .menu-background,
+  .game-background {
+    object-fit: cover;
+    object-position: center center;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+/* Высокие экраны (соотношение сторон > 2:1) */
+@media (min-aspect-ratio: 2/1) {
+  .menu-background,
+  .game-background {
+    object-fit: cover;
+    object-position: center center;
+  }
+}
+
+/* Широкие экраны (соотношение сторон < 1:1) */
+@media (max-aspect-ratio: 1/1) {
+  .menu-background,
+  .game-background {
+    object-fit: cover;
+    object-position: center center;
+  }
+}
+
+/* Высокое разрешение (Retina и выше) */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .menu-background,
+  .game-background {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
 }
 
 /* Меню старта игры */
