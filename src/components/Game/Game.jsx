@@ -12,6 +12,8 @@ import Food from '../Food/Food'
 import Message from '../Message/Message'
 import PlayButton from '../miniGame/PlayButton'
 import CatchFoodGame from '../miniGame/CatchFoodGame'
+import ClickFoodGame from '../miniGame/ClickFoodGame'
+import GameSelector from '../miniGame/GameSelector'
 import './Game.css'
 import gameBackground from '../../assets/rooms/background.png'
 import nightBackground from '../../assets/rooms/night_background.PNG'
@@ -82,6 +84,8 @@ function Game({ onLogout }) {
   const [isNightMode, setIsNightMode] = useState(false)
   const [showPlayButton, setShowPlayButton] = useState(true) // Всегда показываем кнопку
   const [isMiniGameActive, setIsMiniGameActive] = useState(false)
+  const [selectedGame, setSelectedGame] = useState(null) // 'catch-food' or 'click-food'
+  const [showGameSelector, setShowGameSelector] = useState(false)
 
   const audio = useAudio(true) // Autoplay music when game starts
   const { stats, performAction, getMood, getHealthLevel, isLoading: statsLoading, error: statsError } = useStats()
@@ -188,12 +192,19 @@ function Game({ onLogout }) {
 
   const handlePlayButtonClick = () => {
     audio.playClickSound()
+    setShowGameSelector(true)
+  }
+
+  const handleSelectGame = (gameId) => {
+    audio.playClickSound()
+    setShowGameSelector(false)
+    setSelectedGame(gameId)
     setIsMiniGameActive(true)
-    // Game will start automatically when CatchFoodGame becomes active
   }
 
   const handleMiniGameEnd = useCallback((finalScore) => {
     setIsMiniGameActive(false)
+    setSelectedGame(null)
     // Optionally reward player based on score
     if (finalScore > 0) {
       performAction('play') // Increase happiness
@@ -426,11 +437,25 @@ function Game({ onLogout }) {
               visible={showPlayButton && !isMiniGameActive}
             />
 
-            {/* Mini-Game */}
+            {/* Game Selector */}
+            <GameSelector
+              visible={showGameSelector}
+              onSelectGame={handleSelectGame}
+              onClose={() => setShowGameSelector(false)}
+            />
+
+            {/* Mini-Games */}
             <CatchFoodGame
-              isActive={isMiniGameActive}
+              isActive={isMiniGameActive && selectedGame === 'catch-food'}
               onGameEnd={handleMiniGameEnd}
               onCoinsEarned={addCoins}
+            />
+            
+            <ClickFoodGame
+              isActive={isMiniGameActive && selectedGame === 'click-food'}
+              onGameEnd={handleMiniGameEnd}
+              onCoinsEarned={addCoins}
+              onCoinsSpend={spendCoins}
             />
           </div>
         </div>
