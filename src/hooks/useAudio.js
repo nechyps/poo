@@ -104,8 +104,11 @@ export function useAudio(autoplayMusic = false) {
 
   const playClickSound = () => {
     if (isSfxOn && clickAudioRef.current) {
-      clickAudioRef.current.currentTime = 0
-      clickAudioRef.current.play().catch(error => {
+      // Создаем клон аудио элемента для каждого клика, чтобы избежать наложения звуков
+      const audioClone = clickAudioRef.current.cloneNode()
+      audioClone.volume = sfxVolume
+      audioClone.currentTime = 0
+      audioClone.play().catch(error => {
         console.log('Click sound prevented:', error)
       })
     }
