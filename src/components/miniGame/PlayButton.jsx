@@ -8,13 +8,13 @@ function PlayButton({ onClick, visible }) {
     <button 
       className="play-button"
       onClick={onClick}
-      aria-label="Играть и зарабатывать монетки"
+      aria-label="Играть и зарабатывать деньги"
     >
       <div className="play-button__content">
         <span className="play-icon">🎮</span>
         <div className="play-reward">
           <img src={moneyIcon} alt="Coins" className="play-coin-icon" />
-          <span className="play-reward-text">+Монетки</span>
+          <span className="play-reward-text">+Деньги</span>
           <img src={moneyIcon} alt="Coins" className="play-coin-icon" />
         </div>
       </div>

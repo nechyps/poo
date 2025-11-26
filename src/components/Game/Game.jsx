@@ -208,7 +208,7 @@ function Game({ onLogout }) {
     
     // Check if player has enough coins
     if (coins < 20) {
-      showErrorMessage("Недостаточно монет! Нужно 20 монет для кормления.")
+      showErrorMessage("Недостаточно денег! Нужно 20 денег для кормления.")
       return
     }
     
