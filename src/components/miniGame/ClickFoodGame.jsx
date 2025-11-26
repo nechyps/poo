@@ -21,6 +21,10 @@ const GAME_DURATION = 30000 // 30 seconds
 const INITIAL_SPAWN_INTERVAL = 1500
 const MIN_SPAWN_INTERVAL = 500
 const MAX_LIVES = 3
+const INITIAL_FOOD_LIFETIME = 2000 // 2 seconds
+const MIN_FOOD_LIFETIME = 500 // minimum 0.5 seconds
+const FOOD_LIFETIME_DECREASE = 300 // decrease by 300ms every 7 seconds
+const SPEEDUP_INTERVAL = 7000 // every 7 seconds
 
 function ClickFoodGame({ isActive, onGameEnd, onCoinsEarned, onCoinsSpend }) {
   const [score, setScore] = useState(0)
@@ -31,12 +35,15 @@ function ClickFoodGame({ isActive, onGameEnd, onCoinsEarned, onCoinsSpend }) {
   const [lives, setLives] = useState(MAX_LIVES)
   const [forbiddenFood, setForbiddenFood] = useState(null)
   const [showWarning, setShowWarning] = useState(false)
+  const [foodLifetime, setFoodLifetime] = useState(INITIAL_FOOD_LIFETIME)
   const audio = useAudio()
   const gameTimerRef = useRef(null)
   const spawnTimerRef = useRef(null)
   const containerRef = useRef(null)
   const isGameRunningRef = useRef(false)
   const timeLeftRef = useRef(GAME_DURATION / 1000)
+  const foodLifetimeRef = useRef(INITIAL_FOOD_LIFETIME)
+  const elapsedTimeRef = useRef(0)
 
   // Load best score
   useEffect(() => {
@@ -53,6 +60,10 @@ function ClickFoodGame({ isActive, onGameEnd, onCoinsEarned, onCoinsSpend }) {
     timeLeftRef.current = timeLeft
   }, [timeLeft])
 
+  useEffect(() => {
+    foodLifetimeRef.current = foodLifetime
+  }, [foodLifetime])
+
   // Start game
   const startGame = () => {
     // Выбираем случайную запрещенную еду
@@ -62,6 +73,9 @@ function ClickFoodGame({ isActive, onGameEnd, onCoinsEarned, onCoinsSpend }) {
     setTimeLeft(GAME_DURATION / 1000)
     setLives(MAX_LIVES)
     setFoods([])
+    setFoodLifetime(INITIAL_FOOD_LIFETIME)
+    foodLifetimeRef.current = INITIAL_FOOD_LIFETIME
+    elapsedTimeRef.current = 0
     setShowWarning(true)
     
     // Показываем предупреждение 3 секунды, затем начинаем игру
@@ -106,10 +120,11 @@ function ClickFoodGame({ isActive, onGameEnd, onCoinsEarned, onCoinsSpend }) {
 
       setFoods(prev => [...prev, newFood])
 
-      // Remove food after timeout
+      // Remove food after timeout (ускоряется каждые 7 секунд)
+      const currentLifetime = foodLifetimeRef.current
       setTimeout(() => {
         setFoods(prev => prev.filter(f => f.id !== newFood.id))
-      }, 2000)
+      }, currentLifetime)
 
       // Schedule next spawn
       spawnTimerRef.current = setTimeout(spawnFood, spawnInterval)
@@ -139,7 +154,7 @@ function ClickFoodGame({ isActive, onGameEnd, onCoinsEarned, onCoinsSpend }) {
 
     // Проверяем, является ли это запрещенной едой
     if (forbiddenFood && clickedFood.name === forbiddenFood.name) {
-      // Запрещенная еда - отнимаем деньги и жизнь
+      // Запрещенная еда - отнимаем деньги и жизнь (БЕЗ ЗВУКА)
       if (onCoinsSpend) {
         onCoinsSpend(2)
       }
@@ -167,13 +182,13 @@ function ClickFoodGame({ isActive, onGameEnd, onCoinsEarned, onCoinsSpend }) {
         
         return newLives
       })
-      
-      audio.playClickSound()
+      // НЕ играем звук при клике на запрещенную еду
     } else {
       // Правильная еда - добавляем очки и деньги
       setScore(prev => {
         const newScore = prev + 1
         onCoinsEarned(1)
+        // Звук играет только один раз при клике на правильную еду
         audio.playClickSound()
         
         if (newScore > bestScore) {
@@ -191,10 +206,11 @@ function ClickFoodGame({ isActive, onGameEnd, onCoinsEarned, onCoinsSpend }) {
     }, 200)
   }
 
-  // Game timer
+  // Game timer and speedup timer
   useEffect(() => {
     if (!isGameRunning) return
 
+    // Main game timer
     gameTimerRef.current = setInterval(() => {
       setTimeLeft(prev => {
         if (prev <= 1) {
@@ -218,8 +234,22 @@ function ClickFoodGame({ isActive, onGameEnd, onCoinsEarned, onCoinsSpend }) {
       })
     }, 1000)
 
+    // Speedup timer - каждые 7 секунд ускоряем исчезновение еды
+    const speedupTimer = setInterval(() => {
+      elapsedTimeRef.current += SPEEDUP_INTERVAL
+      setFoodLifetime(prev => {
+        const newLifetime = Math.max(
+          MIN_FOOD_LIFETIME,
+          prev - FOOD_LIFETIME_DECREASE
+        )
+        foodLifetimeRef.current = newLifetime
+        return newLifetime
+      })
+    }, SPEEDUP_INTERVAL)
+
     return () => {
       if (gameTimerRef.current) clearInterval(gameTimerRef.current)
+      if (speedupTimer) clearInterval(speedupTimer)
     }
   }, [isGameRunning, score, onGameEnd])
 
@@ -263,7 +293,7 @@ function ClickFoodGame({ isActive, onGameEnd, onCoinsEarned, onCoinsSpend }) {
           </div>
           <div className="click-food-stat">
             <span className="click-food-stat-label">Жизни:</span>
-            <span className="click-food-stat-value lives">{'❤️'.repeat(lives)}{'🤍'.repeat(MAX_LIVES - lives)}</span>
+            <span className="click-food-stat-value lives">{lives}</span>
           </div>
           <div className="click-food-stat">
             <span className="click-food-stat-label">Рекорд:</span>
