@@ -40,6 +40,8 @@
   /* Убедимся, что тач-зона всегда достаточная, даже если визуально кнопка меньше */
   min-width: 44px; 
   min-height: 44px;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 .bottom-button:disabled {
