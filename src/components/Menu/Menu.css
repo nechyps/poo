@@ -256,8 +256,9 @@
     font-size: calc(var(--font-md) * 0.85);
   }
 
-  .volume-value {
-    font-size: calc(var(--font-sm) * 0.9);
+  /* Скрываем слайдеры громкости на мобильных устройствах */
+  .menu-section__body {
+    display: none;
   }
 }
 
@@ -276,7 +277,8 @@
     font-size: calc(var(--font-md) * 0.75);
   }
 
-  .volume-value {
-    font-size: calc(var(--font-sm) * 0.85);
+  /* Скрываем слайдеры громкости на мобильных устройствах */
+  .menu-section__body {
+    display: none;
   }
 }
