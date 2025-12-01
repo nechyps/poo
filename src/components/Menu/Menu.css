@@ -256,6 +256,10 @@
     margin-right: 15%;
   }
 
+  .menu-header p {
+    font-size: calc(var(--font-xs) * 0.9);
+  }
+
   .menu-section__head h3 {
     font-size: calc(var(--font-md) * 0.85);
   }
@@ -279,6 +283,10 @@
     max-width: 65%;
     margin-left: 17.5%;
     margin-right: 17.5%;
+  }
+
+  .menu-header p {
+    font-size: calc(var(--font-xs) * 0.85);
   }
 
   .menu-section__head h3 {
