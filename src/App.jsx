@@ -42,6 +42,11 @@ function App() {
   const handleStartClick = () => {
     audio.playClickSound()
     
+    // Запускаем музыку при нажатии кнопки старт
+    if (audio.startMusic) {
+      audio.startMusic()
+    }
+    
     // Если пользователь не авторизован, показываем экран авторизации
     if (!isAuthenticated && !authLoading) {
       setShowAuthScreen(true)
@@ -53,6 +58,10 @@ function App() {
 
   const handleLogout = () => {
     audio.playClickSound()
+    // Останавливаем музыку при выходе из игры (но не меняем настройку)
+    if (audio.stopMusic) {
+      audio.stopMusic()
+    }
     setIsGameStarted(false)
     setShowAuthScreen(false)
   }
@@ -60,6 +69,10 @@ function App() {
   const handleAuthSuccess = () => {
     // После успешной авторизации запускаем игру
     audio.playClickSound()
+    // Запускаем музыку при старте игры
+    if (audio.startMusic) {
+      audio.startMusic()
+    }
     setShowAuthScreen(false)
     setIsGameStarted(true)
   }
@@ -67,6 +80,10 @@ function App() {
   const handleSkipAuth = () => {
     // Пропускаем авторизацию и запускаем игру в гостевом режиме
     audio.playClickSound()
+    // Запускаем музыку при старте игры
+    if (audio.startMusic) {
+      audio.startMusic()
+    }
     setShowAuthScreen(false)
     setIsGameStarted(true)
   }
@@ -103,7 +120,7 @@ function App() {
 
   // Показываем игру если начата
   if (isGameStarted) {
-    return <Game onLogout={handleLogout} />
+    return <Game onLogout={handleLogout} audio={audio} />
   }
 
   return (

@@ -4,7 +4,11 @@ import gameMusic from '../assets/music/game-gaming-minecraft-background-music-37
 
 const STORAGE_KEY = 'tamagotchi_audio_settings'
 
-export function useAudio(autoplayMusic = false) {
+// Глобальные экземпляры аудио для предотвращения дублирования
+let globalMusicAudio = null
+let globalClickAudio = null
+
+export function useAudio() {
   const [isMusicOn, setIsMusicOn] = useState(true)
   const [isSfxOn, setIsSfxOn] = useState(true)
   const [musicVolume, setMusicVolume] = useState(0.5)
@@ -43,69 +47,61 @@ export function useAudio(autoplayMusic = false) {
     }
   }, [isMusicOn, isSfxOn, musicVolume, sfxVolume])
 
-  // Initialize audio (only once)
+  // Initialize audio (only once, используем глобальные экземпляры)
   useEffect(() => {
-    // Initialize music only if not already created
-    if (!musicRef.current) {
-      musicRef.current = new Audio(gameMusic)
-      musicRef.current.loop = true
-      musicRef.current.volume = musicVolume
-      musicRef.current.preload = 'auto'
+    // Используем глобальный экземпляр музыки, если он уже создан
+    if (!globalMusicAudio) {
+      globalMusicAudio = new Audio(gameMusic)
+      globalMusicAudio.loop = true
+      globalMusicAudio.volume = musicVolume
+      globalMusicAudio.preload = 'auto'
     }
+    musicRef.current = globalMusicAudio
 
-    // Initialize click sound only if not already created
-    if (!clickAudioRef.current) {
-      clickAudioRef.current = new Audio(clickSound)
-      clickAudioRef.current.preload = 'auto'
-      clickAudioRef.current.volume = sfxVolume
+    // Используем глобальный экземпляр клика, если он уже создан
+    if (!globalClickAudio) {
+      globalClickAudio = new Audio(clickSound)
+      globalClickAudio.preload = 'auto'
+      globalClickAudio.volume = sfxVolume
     }
-
-    // Start music automatically if autoplayMusic is true and music is enabled
-    if (autoplayMusic && isMusicOn && musicRef.current) {
-      musicRef.current.play().catch(error => {
-        console.log('Autoplay prevented, user interaction required')
-      })
-    }
-
-    return () => {
-      // Don't destroy audio on unmount, just pause
-      if (musicRef.current && !musicRef.current.paused) {
-        musicRef.current.pause()
-      }
-    }
-  }, [autoplayMusic, isMusicOn])
+    clickAudioRef.current = globalClickAudio
+  }, [])
 
   // Update music volume
   useEffect(() => {
-    if (musicRef.current) {
-      musicRef.current.volume = musicVolume
+    if (globalMusicAudio) {
+      globalMusicAudio.volume = musicVolume
     }
   }, [musicVolume])
 
   // Update SFX volume
   useEffect(() => {
-    if (clickAudioRef.current) {
-      clickAudioRef.current.volume = sfxVolume
+    if (globalClickAudio) {
+      globalClickAudio.volume = sfxVolume
     }
   }, [sfxVolume])
 
-  // Handle music toggle
+  // Handle music toggle (используем глобальный экземпляр)
   useEffect(() => {
-    if (musicRef.current) {
+    if (globalMusicAudio) {
       if (isMusicOn) {
-        musicRef.current.play().catch(error => {
-          console.log('Music play prevented:', error)
-        })
+        // Если музыка включена, запускаем её (если ещё не играет)
+        if (globalMusicAudio.paused) {
+          globalMusicAudio.play().catch(error => {
+            console.log('Music play prevented:', error)
+          })
+        }
       } else {
-        musicRef.current.pause()
+        // Если музыка выключена, останавливаем её
+        globalMusicAudio.pause()
       }
     }
   }, [isMusicOn])
 
   const playClickSound = () => {
-    if (isSfxOn && clickAudioRef.current) {
+    if (isSfxOn && globalClickAudio) {
       // Создаем клон аудио элемента для каждого клика, чтобы избежать наложения звуков
-      const audioClone = clickAudioRef.current.cloneNode()
+      const audioClone = globalClickAudio.cloneNode()
       audioClone.volume = sfxVolume
       audioClone.currentTime = 0
       audioClone.play().catch(error => {
@@ -122,6 +118,21 @@ export function useAudio(autoplayMusic = false) {
     setIsSfxOn(prev => !prev)
   }
 
+  const startMusic = () => {
+    if (globalMusicAudio && isMusicOn) {
+      globalMusicAudio.play().catch(error => {
+        console.log('Music start prevented:', error)
+      })
+    }
+  }
+
+  const stopMusic = () => {
+    if (globalMusicAudio) {
+      globalMusicAudio.pause()
+      globalMusicAudio.currentTime = 0
+    }
+  }
+
   return {
     isMusicOn,
     isSfxOn,
@@ -131,7 +142,9 @@ export function useAudio(autoplayMusic = false) {
     setSfxVolume,
     toggleMusic,
     toggleSfx,
-    playClickSound
+    playClickSound,
+    startMusic,
+    stopMusic
   }
 }
 

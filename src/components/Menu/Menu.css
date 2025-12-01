@@ -1,9 +1,6 @@
 .menu-overlay {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(2px);
   z-index: 100;
@@ -14,10 +11,8 @@
 }
 
 .menu-content {
-  /* Fluid width constraints */
   width: min(400px, 100%);
   max-height: min(600px, 90vh);
-  
   background-size: cover;
   background-position: center;
   border-radius: 24px;
@@ -69,8 +64,6 @@
   text-align: center;
   max-width: 100%;
   margin-top: 55px;
-
-  
 }
 
 .menu-header h2 {
@@ -94,7 +87,6 @@
   gap: var(--spacing-sm);
   padding-right: 4px;
   min-height: 0;
-  /* Hide scrollbar but keep functionality */
   scrollbar-width: thin;
   scrollbar-color: rgba(0,0,0,0.1) transparent;
 }
@@ -113,7 +105,7 @@
   border-radius: 16px;
   padding: var(--spacing-sm);
   max-width: 80%;
-  margin-left: 10%;
+  margin: 0 auto;
   flex-shrink: 0;
 }
 
@@ -252,11 +244,11 @@
 @media (max-width: 768px) {
   .menu-section {
     max-width: 70%;
-    margin-left: 15%;
-    margin-right: 15%;
   }
 
-  .menu-header p {
+  .menu-header p,
+  .menu-section__head p,
+  .menu-save-pill {
     font-size: calc(var(--font-xs) * 0.9);
   }
 
@@ -264,28 +256,19 @@
     font-size: calc(var(--font-md) * 0.85);
   }
 
-  .menu-section__head p {
-    font-size: calc(var(--font-xs) * 0.9);
-  }
-
   .volume-value {
     font-size: calc(var(--font-sm) * 0.9);
   }
-
-  .menu-save-pill {
-    font-size: calc(var(--font-xs) * 0.9);
-  }
 }
 
-/* Для маленьких экранов (до 480px) */
 @media (max-width: 480px) {
   .menu-section {
     max-width: 65%;
-    margin-left: 17.5%;
-    margin-right: 17.5%;
   }
 
-  .menu-header p {
+  .menu-header p,
+  .menu-section__head p,
+  .menu-save-pill {
     font-size: calc(var(--font-xs) * 0.85);
   }
 
@@ -293,15 +276,7 @@
     font-size: calc(var(--font-md) * 0.75);
   }
 
-  .menu-section__head p {
-    font-size: calc(var(--font-xs) * 0.85);
-  }
-
   .volume-value {
     font-size: calc(var(--font-sm) * 0.85);
-  }
-
-  .menu-save-pill {
-    font-size: calc(var(--font-xs) * 0.85);
   }
 }

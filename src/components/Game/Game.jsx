@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { useAudio } from '../../hooks/useAudio'
 import { useStats } from '../../hooks/useStats'
 import { useCharacter } from '../../hooks/useCharacter'
 import { useCoins } from '../../hooks/useCoins'
@@ -73,7 +72,7 @@ const MESSAGES = {
   ]
 }
 
-function Game({ onLogout }) {
+function Game({ onLogout, audio }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [currentBackground, setCurrentBackground] = useState(gameBackground)
   const [backgroundKey, setBackgroundKey] = useState(0) // Ключ для принудительного обновления
@@ -87,7 +86,6 @@ function Game({ onLogout }) {
   const [selectedGame, setSelectedGame] = useState(null) // 'catch-food' or 'click-food'
   const [showGameSelector, setShowGameSelector] = useState(false)
 
-  const audio = useAudio(true) // Autoplay music when game starts
   const { stats, performAction, getMood, getHealthLevel, isLoading: statsLoading, error: statsError } = useStats()
   const { currentImage, currentState, isAnimating, setMood, performAction: performCharacterAction, resetToNormal } = useCharacter()
   const { coins, addCoins, spendCoins } = useCoins()
