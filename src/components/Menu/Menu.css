@@ -247,3 +247,53 @@
   min-height: 10px;
   width: 100%;
 }
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 768px) {
+  .menu-section {
+    max-width: 70%;
+    margin-left: 15%;
+    margin-right: 15%;
+  }
+
+  .menu-section__head h3 {
+    font-size: calc(var(--font-md) * 0.85);
+  }
+
+  .menu-section__head p {
+    font-size: calc(var(--font-xs) * 0.9);
+  }
+
+  .volume-value {
+    font-size: calc(var(--font-sm) * 0.9);
+  }
+
+  .menu-save-pill {
+    font-size: calc(var(--font-xs) * 0.9);
+  }
+}
+
+/* Для маленьких экранов (до 480px) */
+@media (max-width: 480px) {
+  .menu-section {
+    max-width: 65%;
+    margin-left: 17.5%;
+    margin-right: 17.5%;
+  }
+
+  .menu-section__head h3 {
+    font-size: calc(var(--font-md) * 0.75);
+  }
+
+  .menu-section__head p {
+    font-size: calc(var(--font-xs) * 0.85);
+  }
+
+  .volume-value {
+    font-size: calc(var(--font-sm) * 0.85);
+  }
+
+  .menu-save-pill {
+    font-size: calc(var(--font-xs) * 0.85);
+  }
+}
