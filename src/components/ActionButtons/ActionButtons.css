@@ -1,6 +1,6 @@
 .bottom-buttons {
   position: absolute;
-  bottom: max(60px, calc(env(safe-area-inset-bottom, 20px) + 40px));
+  bottom: max(40px, calc(env(safe-area-inset-bottom, 20px) + 20px));
   left: 50%;
   transform: translateX(-50%);
   display: flex;
@@ -15,14 +15,14 @@
 /* Поднимаем кнопки выше на мобильных устройствах и планшетах */
 @media (max-width: 1024px) {
   .bottom-buttons {
-    bottom: max(80px, calc(env(safe-area-inset-bottom, 20px) + 60px));
+    bottom: max(60px, calc(env(safe-area-inset-bottom, 20px) + 40px));
   }
 }
 
 /* Для очень маленьких экранов поднимаем еще выше */
 @media (max-width: 480px) {
   .bottom-buttons {
-    bottom: max(100px, calc(env(safe-area-inset-bottom, 20px) + 80px));
+    bottom: max(80px, calc(env(safe-area-inset-bottom, 20px) + 60px));
   }
 }
 
