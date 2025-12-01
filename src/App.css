@@ -1,6 +1,26 @@
+/* Базовые стили для html и body */
+html, body {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  /* Используем dvh для мобильных устройств с fallback на vh */
+  height: 100vh;
+  height: 100dvh;
+}
+
+#root {
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+}
+
 .app-container {
   width: 100%;
-  height: 100%;
+  height: 100vh;
+  height: 100dvh;
+  min-height: 100vh;
+  min-height: 100dvh;
   background: #000;
   display: flex;
   justify-content: center;
@@ -10,7 +30,10 @@
 
 .phone-frame {
   width: 100%;
-  height: 100%;
+  height: 100vh;
+  height: 100dvh;
+  min-height: 100vh;
+  min-height: 100dvh;
   background: #000000; /* Черный фон, чтобы не было белых бортиков */
   position: relative;
   display: flex;
@@ -28,24 +51,28 @@
   background: #000000; /* Черный фон для предотвращения белых краев */
   /* Поддержка safe-area */
   width: 100%;
-  height: 100%;
+  height: 100vh;
+  height: 100dvh;
   /* Минимальные размеры для предотвращения сжатия */
   min-width: 100%;
-  min-height: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
 }
 
 .content {
   position: relative;
   /* Поддержка safe-area */
   width: calc(100% - env(safe-area-inset-left, 0) - env(safe-area-inset-right, 0));
-  height: calc(100% - env(safe-area-inset-top, 0) - env(safe-area-inset-bottom, 0));
+  height: calc(100vh - env(safe-area-inset-top, 0) - env(safe-area-inset-bottom, 0));
+  height: calc(100dvh - env(safe-area-inset-top, 0) - env(safe-area-inset-bottom, 0));
   margin-left: env(safe-area-inset-left, 0);
   margin-right: env(safe-area-inset-right, 0);
   margin-top: env(safe-area-inset-top, 0);
   margin-bottom: env(safe-area-inset-bottom, 0);
   /* Минимальные размеры */
   min-width: 100%;
-  min-height: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
 }
 
 .menu-background,
@@ -56,16 +83,19 @@
   right: 0;
   bottom: 0;
   width: 100%;
-  height: 100%;
+  height: 100vh;
+  height: 100dvh;
   object-fit: cover;
   object-position: center center;
   z-index: 1;
   pointer-events: none;
   /* Принудительное растягивание для заполнения всего экрана */
   min-width: 100%;
-  min-height: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
   max-width: 100%;
-  max-height: 100%;
+  max-height: 100vh;
+  max-height: 100dvh;
   /* Плавная смена фона */
   transition: opacity 0.3s ease-in-out;
   opacity: 1;
@@ -99,6 +129,69 @@
   }
 }
 
+/* Мобильные устройства и планшеты - используем dvh */
+@media (max-width: 1024px) {
+  html, body {
+    height: 100vh;
+    height: 100dvh;
+  }
+  
+  #root {
+    height: 100vh;
+    height: 100dvh;
+  }
+  
+  .app-container {
+    height: 100vh;
+    height: 100dvh;
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+  
+  .phone-frame {
+    height: 100vh;
+    height: 100dvh;
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+  
+  .phone-screen {
+    height: 100vh;
+    height: 100dvh;
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+  
+  .content {
+    height: calc(100vh - env(safe-area-inset-top, 0) - env(safe-area-inset-bottom, 0));
+    height: calc(100dvh - env(safe-area-inset-top, 0) - env(safe-area-inset-bottom, 0));
+    min-height: calc(100vh - env(safe-area-inset-top, 0) - env(safe-area-inset-bottom, 0));
+    min-height: calc(100dvh - env(safe-area-inset-top, 0) - env(safe-area-inset-bottom, 0));
+  }
+  
+  .menu-background,
+  .game-background {
+    height: 100vh;
+    height: 100dvh;
+    min-height: 100vh;
+    min-height: 100dvh;
+    max-height: 100vh;
+    max-height: 100dvh;
+    width: 100vw;
+    min-width: 100vw;
+    max-width: 100vw;
+    object-fit: cover;
+    object-position: center center;
+  }
+  
+  .buttons-container {
+    height: 100vh;
+    height: 100dvh;
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+}
+
 /* Очень маленькие экраны (до 320px) */
 @media (max-width: 320px) {
   .menu-background,
@@ -107,33 +200,48 @@
     object-position: center center;
     min-width: 100vw;
     min-height: 100vh;
+    min-height: 100dvh;
+    height: 100vh;
+    height: 100dvh;
   }
 }
 
-/* Маленькие экраны (320px - 480px) */
+/* Маленькие экраны (320px - 480px) - телефоны */
 @media (min-width: 320px) and (max-width: 480px) {
   .menu-background,
   .game-background {
     object-fit: cover;
     object-position: center center;
+    height: 100vh;
+    height: 100dvh;
+    min-height: 100vh;
+    min-height: 100dvh;
   }
 }
 
-/* Средние экраны (480px - 768px) */
+/* Средние экраны (480px - 768px) - большие телефоны и маленькие планшеты */
 @media (min-width: 480px) and (max-width: 768px) {
   .menu-background,
   .game-background {
     object-fit: cover;
     object-position: center center;
+    height: 100vh;
+    height: 100dvh;
+    min-height: 100vh;
+    min-height: 100dvh;
   }
 }
 
-/* Планшеты (768px - 1024px) */
+/* Планшеты (768px - 1024px) - iPad и другие планшеты */
 @media (min-width: 768px) and (max-width: 1024px) {
   .menu-background,
   .game-background {
     object-fit: cover;
     object-position: center center;
+    height: 100vh;
+    height: 100dvh;
+    min-height: 100vh;
+    min-height: 100dvh;
   }
 }
 
@@ -192,12 +300,16 @@
   top: 0;
   left: 0;
   width: 100%;
-  height: 100%;
+  height: 100vh;
+  height: 100dvh;
+  min-height: 100vh;
+  min-height: 100dvh;
   z-index: 2;
   display: flex;
   justify-content: center;
   align-items: center;
   padding-bottom: 10vh;
+  padding-bottom: 10dvh;
 }
 
 .start-button {
