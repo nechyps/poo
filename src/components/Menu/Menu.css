@@ -260,6 +260,11 @@
   .menu-section__body {
     display: none;
   }
+
+  /* Перемещаем кнопку закрытия чуть левее на телефонах */
+  .menu-close-button {
+    right: calc(var(--spacing-sm) + 40px);
+  }
 }
 
 @media (max-width: 480px) {
