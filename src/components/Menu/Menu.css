@@ -63,10 +63,14 @@
 }
 
 .menu-header {
-  background: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0);
   border-radius: 16px;
   padding: var(--spacing-sm);
   text-align: center;
+  max-width: 100%;
+  margin-top: 55px;
+
+  
 }
 
 .menu-header h2 {
@@ -89,6 +93,7 @@
   flex-direction: column;
   gap: var(--spacing-sm);
   padding-right: 4px;
+  min-height: 0;
   /* Hide scrollbar but keep functionality */
   scrollbar-width: thin;
   scrollbar-color: rgba(0,0,0,0.1) transparent;
@@ -104,10 +109,12 @@
 }
 
 .menu-section {
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0);
   border-radius: 16px;
   padding: var(--spacing-sm);
-  box-shadow: var(--shadow-sm);
+  max-width: 80%;
+  margin-left: 10%;
+  flex-shrink: 0;
 }
 
 .menu-section__head {
@@ -214,32 +221,29 @@
   text-align: center;
 }
 
-.menu-logout {
-  width: 100%;
-  margin-top: var(--spacing-sm);
-  padding: var(--spacing-sm);
-  border-radius: 16px;
-  border: none;
-  background: rgba(255, 255, 255, 0.85);
+.menu-button.logout-button {
+  background: rgba(192, 64, 64, 0.1);
   color: #c04040;
-  font-weight: 600;
-  font-size: var(--font-sm);
+  border: 2px solid rgba(192, 64, 64, 0.2);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--spacing-sm);
-  cursor: pointer;
-  box-shadow: inset 0 0 0 2px rgba(192, 64, 64, 0.1);
-  transition: all 0.2s;
+  gap: 8px;
 }
 
-.menu-logout img {
-  width: var(--font-md);
-  height: var(--font-md);
+.menu-button.logout-button:hover {
+  background: rgba(192, 64, 64, 0.15);
+  border-color: rgba(192, 64, 64, 0.3);
+  transform: translateY(-2px);
 }
 
-.menu-logout:hover {
-  background: rgba(255, 255, 255, 1);
-  box-shadow: inset 0 0 0 2px rgba(192, 64, 64, 0.25);
-  transform: translateY(-1px);
+.menu-button.logout-button img {
+  width: 16px;
+  height: 16px;
+}
+
+.menu-spacer {
+  flex: 1 1 auto;
+  min-height: 10px;
+  width: 100%;
 }

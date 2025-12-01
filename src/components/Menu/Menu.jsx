@@ -1,5 +1,6 @@
 import './Menu.css'
 import { UserProfile } from '../Auth/UserProfile'
+import { useAuth } from '../../contexts/AuthContext'
 import settings from '../../assets/hud/settings.PNG'
 import buttonLogout from '../../assets/hud/buttons/button_logout.PNG'
 import buttonCross from '../../assets/hud/buttons/button_cross.PNG'
@@ -20,6 +21,8 @@ function Menu({
   onLoad,
   lastSaveTime
 }) {
+  const { user } = useAuth()
+
   const withClick = (callback) => () => {
     playClickSound?.()
     callback?.()
@@ -73,9 +76,11 @@ function Menu({
 
         <div className="menu-scroll">
           {/* Профиль пользователя */}
-          <section className="menu-section">
-            <UserProfile />
-          </section>
+          {user && (
+            <section className="menu-section">
+              <UserProfile />
+            </section>
+          )}
 
           {sections.map((section) => (
             <section className="menu-section" key={section.title}>
@@ -134,17 +139,16 @@ function Menu({
             {lastSaveTime && (
               <div className="menu-save-pill">Последнее сохранение: {lastSaveTime}</div>
             )}
+
+            <div className="menu-actions" style={{ marginTop: '12px' }}>
+              <button className="menu-button logout-button" onClick={withClick(onLogout)}>
+                <img src={buttonLogout} alt="Выйти в меню" />
+                Выйти
+              </button>
+            </div>
           </section>
         </div>
-
-        <button
-          type="button"
-          className="menu-logout"
-          onClick={withClick(onLogout)}
-        >
-          <img src={buttonLogout} alt="Выйти в меню" />
-          Выйти
-        </button>
+        <div className="menu-spacer"></div>
       </div>
     </div>
   )
