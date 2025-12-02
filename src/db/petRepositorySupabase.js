@@ -77,6 +77,8 @@ export async function savePetSave(userId, petData) {
     }
 
     // Используем upsert для создания или обновления
+    console.log('💾 Сохранение в Supabase:', validatedData)
+    
     const { data, error } = await supabase
       .from('pet_saves')
       .upsert(

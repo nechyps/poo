@@ -74,38 +74,50 @@ export function usePet() {
   /**
    * Сохранение статистики питомца в Supabase
    */
-  const savePetStats = useCallback(async (stats) => {
+  const savePetStats = useCallback(async (newStats) => {
     if (!isAuthenticated || !userId) {
       // Если не авторизован, только обновляем локальное состояние
       setPet(prev => ({
         ...prev,
-        ...stats,
+        ...newStats,
       }))
       return false
     }
 
-    if (!pet) {
-      console.warn('Питомец не загружен, невозможно сохранить')
-      return false
+    // Используем функциональное обновление, чтобы получить актуальный стейт
+    let updatedPet = null
+    setPet(prev => {
+      if (!prev) return prev
+      updatedPet = { ...prev, ...newStats }
+      return updatedPet
+    })
+
+    // Если пет не был загружен, мы не можем сохранить
+    if (!updatedPet) {
+       // Попробуем взять newStats как основу, если это инициализация? 
+       // Нет, лучше подождать загрузки.
+       console.warn('Питомец не загружен, пропускаем сохранение')
+       return false
     }
 
     try {
-      const updatedData = await updatePetStats(userId, stats)
-      setPet(updatedData)
+      // Отправляем полный объект, чтобы избежать гонки чтения в БД
+      // Мы считаем, что локальный стейт - самый актуальный
+      const savedData = await savePetSave(userId, updatedPet)
+      
+      // Обновляем стейт подтвержденными данными из БД
+      setPet(savedData)
       setLastSaveTime(Date.now())
-      console.log('Статистика питомца сохранена')
+      console.log('✅ Статистика питомца успешно сохранена в облако')
       return true
     } catch (err) {
-      console.error('Ошибка сохранения статистики питомца:', err)
-      // Обновляем локальное состояние даже при ошибке
-      setPet(prev => ({
-        ...prev,
-        ...stats,
-      }))
+      console.error('❌ Ошибка сохранения статистики питомца:', err)
+      // Локальный стейт мы уже обновили оптимистично, так что пользователь не заметит лага.
+      // Но надо показать ошибку.
       setError(err.message)
       return false
     }
-  }, [pet, userId, isAuthenticated])
+  }, [userId, isAuthenticated])
 
   /**
    * Ручное сохранение
@@ -211,30 +223,14 @@ export function usePet() {
     })
   }, [lastSaveTime])
 
-  // Автосохранение при изменении питомца (для авторизованных пользователей)
+  // Удалено дублирующее автосохранение, так как useStats и useCoins сами инициируют сохранение
+  // при изменении данных. usePetSupabase отвечает только за транспорт и хранение.
+  /*
   useEffect(() => {
     if (!isAuthenticated || !userId || !pet || isLoading) return
-
-    // Очищаем предыдущий таймаут
-    if (autoSaveTimeoutRef.current) {
-      clearTimeout(autoSaveTimeoutRef.current)
-    }
-
-    // Сохраняем через 2 секунды после последнего изменения
-    autoSaveTimeoutRef.current = setTimeout(async () => {
-      try {
-        await savePetStats(pet)
-      } catch (err) {
-        console.error('Ошибка автосохранения:', err)
-      }
-    }, 2000)
-
-    return () => {
-      if (autoSaveTimeoutRef.current) {
-        clearTimeout(autoSaveTimeoutRef.current)
-      }
-    }
+    // ... (код автосохранения)
   }, [pet, userId, isAuthenticated, isLoading, savePetStats])
+  */
 
   return {
     pet,
