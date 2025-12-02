@@ -21,23 +21,14 @@ function App() {
     }
   }, [authError])
 
-  // Обработка OAuth callback
+  // Обработка состояния авторизации
   useEffect(() => {
-    const handleAuthCallback = async () => {
-      const hashParams = new URLSearchParams(window.location.hash.substring(1))
-      if (hashParams.get('access_token')) {
-        // OAuth callback обрабатывается автоматически Supabase
-        // После успешной авторизации запускаем игру
-        setTimeout(() => {
-          setShowAuthScreen(false)
-          setIsGameStarted(true)
-        }, 1000)
-        // Очищаем hash из URL
-        window.history.replaceState(null, '', window.location.pathname)
-      }
+    // Если пользователь авторизовался, убираем экран входа и запускаем игру
+    if (isAuthenticated) {
+      setShowAuthScreen(false)
+      setIsGameStarted(true)
     }
-    handleAuthCallback()
-  }, [])
+  }, [isAuthenticated])
 
   const handleStartClick = () => {
     audio.playClickSound()

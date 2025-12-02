@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import './Menu.css'
 import { UserProfile } from '../Auth/UserProfile'
 import { useAuth } from '../../contexts/AuthContext'
@@ -21,7 +22,13 @@ function Menu({
   onLoad,
   lastSaveTime
 }) {
-  const { user } = useAuth()
+  const { user, isAuthenticated, loading, session } = useAuth()
+
+  // Отладка: проверяем состояние авторизации
+  useEffect(() => {
+    console.log('📋 Menu - user:', user?.email || 'null', 'isAuthenticated:', isAuthenticated, 'loading:', loading, 'session:', !!session)
+    console.log('📋 Menu - user object:', user)
+  }, [user, isAuthenticated, loading, session])
 
   const withClick = (callback) => () => {
     playClickSound?.()
@@ -75,10 +82,34 @@ function Menu({
         </div>
 
         <div className="menu-scroll">
-          {/* Профиль пользователя */}
-          {user && (
-            <section className="menu-section">
+          {/* Профиль пользователя - всегда показываем для отладки */}
+          <section className="menu-section">
+            {isAuthenticated && user ? (
               <UserProfile />
+            ) : (
+              <div style={{ padding: '10px', color: '#999', fontSize: '12px' }}>
+                {loading ? 'Загрузка авторизации...' : 'Не авторизован'}
+                {user && <div>user существует, но isAuthenticated=false</div>}
+                {isAuthenticated && !user && <div>isAuthenticated=true, но user=null</div>}
+              </div>
+            )}
+          </section>
+          
+          {/* Отладочная информация (временно для разработки) */}
+          {process.env.NODE_ENV === 'development' && (
+            <section className="menu-section" style={{ fontSize: '11px', color: '#666', padding: '12px', background: '#f5f5f5', borderRadius: '8px', margin: '10px 0', border: '1px solid #ddd' }}>
+              <div style={{ fontWeight: 'bold', marginBottom: '8px', color: '#333' }}>🔍 Debug Info:</div>
+              <div>user: {user ? `✅ exists (${user.email})` : '❌ null'}</div>
+              <div>isAuthenticated: {isAuthenticated ? '✅ true' : '❌ false'}</div>
+              <div>loading: {loading ? '⏳ true' : '✅ false'}</div>
+              <div>session: {session ? '✅ exists' : '❌ null'}</div>
+              {user && (
+                <div style={{ marginTop: '8px', paddingTop: '8px', borderTop: '1px solid #ddd' }}>
+                  <div>user.id: {user.id}</div>
+                  <div>user.email: {user.email}</div>
+                  <div>userName: {user.user_metadata?.full_name || user.email?.split('@')[0]}</div>
+                </div>
+              )}
             </section>
           )}
 

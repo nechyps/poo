@@ -6,9 +6,15 @@ import { useAuth } from '../../contexts/AuthContext'
 import './UserProfile.css'
 
 export function UserProfile() {
-  const { user, userName, userAvatar, signOut, loading } = useAuth()
+  const { user, userName, userAvatar, signOut, loading, isAuthenticated } = useAuth()
 
-  if (!user) return null
+  // Отладка
+  console.log('👤 UserProfile render - user:', user?.email || 'null', 'isAuthenticated:', isAuthenticated)
+
+  if (!user) {
+    console.log('👤 UserProfile: user is null, не отображаем профиль')
+    return null
+  }
 
   const handleSignOut = async () => {
     await signOut()
