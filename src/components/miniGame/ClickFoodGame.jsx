@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useAudio } from '../../hooks/useAudio'
+import { usePet } from '../../hooks/usePetSupabase'
 import GameOverModal from './GameOverModal'
 import './ClickFoodGame.css'
 import candies from '../../assets/meal/candies.png'
@@ -27,6 +28,7 @@ const FOOD_LIFETIME_DECREASE = 300 // decrease by 300ms every 7 seconds
 const SPEEDUP_INTERVAL = 7000 // every 7 seconds
 
 function ClickFoodGame({ isActive, onGameEnd, onCoinsEarned, onCoinsSpend }) {
+  const { pet, savePetStats } = usePet()
   const [score, setScore] = useState(0)
   const [timeLeft, setTimeLeft] = useState(GAME_DURATION / 1000)
   const [isGameRunning, setIsGameRunning] = useState(false)
@@ -45,11 +47,29 @@ function ClickFoodGame({ isActive, onGameEnd, onCoinsEarned, onCoinsSpend }) {
   const foodLifetimeRef = useRef(INITIAL_FOOD_LIFETIME)
   const elapsedTimeRef = useRef(0)
 
-  // Load best score
+  // Load best score from pet data
   useEffect(() => {
-    const saved = localStorage.getItem('clickFoodGame_bestScore')
-    if (saved) setBestScore(parseInt(saved))
-  }, [])
+    if (pet && pet.clickFoodBestScore !== undefined) {
+      const petBestScore = pet.clickFoodBestScore || 0
+      if (petBestScore > bestScore) {
+        setBestScore(petBestScore)
+      }
+    }
+  }, [pet])
+
+  // Сохраняем best score в Supabase при изменении
+  useEffect(() => {
+    if (bestScore > 0 && savePetStats && pet) {
+      // Проверяем, что это действительно новый рекорд
+      const currentBest = pet.clickFoodBestScore || 0
+      if (bestScore > currentBest) {
+        console.log('💾 Сохранение нового рекорда Click Food:', bestScore)
+        savePetStats({ clickFoodBestScore: bestScore }).catch(err => {
+          console.error('❌ Ошибка сохранения рекорда:', err)
+        })
+      }
+    }
+  }, [bestScore, savePetStats, pet])
 
   // Sync refs with state
   useEffect(() => {
@@ -193,7 +213,6 @@ function ClickFoodGame({ isActive, onGameEnd, onCoinsEarned, onCoinsSpend }) {
         
         if (newScore > bestScore) {
           setBestScore(newScore)
-          localStorage.setItem('clickFoodGame_bestScore', newScore.toString())
         }
         
         return newScore

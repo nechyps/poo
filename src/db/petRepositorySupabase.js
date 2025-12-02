@@ -15,6 +15,8 @@ import { supabase } from './supabaseClient'
  * @property {number} cleanliness - Уровень чистоты (0-100)
  * @property {number} health - Уровень здоровья (0-100)
  * @property {number} coins - Количество монет
+ * @property {number} catchFoodBestScore - Лучший счет в игре Catch Food
+ * @property {number} clickFoodBestScore - Лучший счет в игре Click Food
  */
 
 /**
@@ -74,28 +76,49 @@ export async function savePetSave(userId, petData) {
       cleanliness: Math.max(0, Math.min(100, petData.cleanliness ?? 80)),
       health: Math.max(0, Math.min(100, petData.health ?? 100)),
       coins: Math.max(0, petData.coins ?? 0),
+      catchFoodBestScore: Math.max(0, petData.catchFoodBestScore ?? 0),
+      clickFoodBestScore: Math.max(0, petData.clickFoodBestScore ?? 0),
+      last_updated: petData.last_updated || Date.now(),
     }
 
     // Используем upsert для создания или обновления
-    console.log('💾 Сохранение в Supabase:', validatedData)
+    console.log('💾 Сохранение в Supabase:')
+    console.log('  - userId:', userId)
+    console.log('  - pet_data:', validatedData)
+    
+    const upsertData = {
+      user_id: userId,
+      pet_data: validatedData,
+      updated_at: new Date().toISOString(),
+    }
+    
+    console.log('  - Отправляем данные:', upsertData)
     
     const { data, error } = await supabase
       .from('pet_saves')
       .upsert(
-        {
-          user_id: userId,
-          pet_data: validatedData,
-          updated_at: new Date().toISOString(),
-        },
+        upsertData,
         {
           onConflict: 'user_id',
         }
       )
-      .select('pet_data, updated_at')
+      .select('pet_data, updated_at, user_id')
       .single()
 
     if (error) {
+      console.error('❌ Ошибка Supabase при сохранении:')
+      console.error('  - Код:', error.code)
+      console.error('  - Сообщение:', error.message)
+      console.error('  - Детали:', error.details)
+      console.error('  - Подсказка:', error.hint)
       throw error
+    }
+
+    console.log('✅ Данные успешно сохранены в Supabase')
+    console.log('  - Ответ от БД:', data)
+    
+    if (!data || !data.pet_data) {
+      throw new Error('Сервер вернул пустые данные')
     }
 
     return data.pet_data
@@ -130,6 +153,8 @@ export async function updatePetStats(userId, stats) {
         cleanliness: 80,
         health: 100,
         coins: 0,
+        catchFoodBestScore: 0,
+        clickFoodBestScore: 0,
       }),
       ...stats,
     }
@@ -158,6 +183,8 @@ export async function createPet(userId, initialData = {}) {
       cleanliness: 80,
       health: 100,
       coins: 0,
+      catchFoodBestScore: 0,
+      clickFoodBestScore: 0,
       ...initialData,
     }
 

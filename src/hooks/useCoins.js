@@ -6,16 +6,19 @@ export function useCoins() {
   const [coins, setCoins] = useState(0)
   const saveTimeoutRef = useRef(null)
 
+  const initializedRef = useRef(false)
+
   // Load coins from pet when pet is loaded
   useEffect(() => {
-    if (pet && pet.coins !== undefined) {
+    if (pet && pet.coins !== undefined && !initializedRef.current) {
       setCoins(pet.coins || 0)
+      initializedRef.current = true
     }
   }, [pet])
 
   // Save coins to database when they change
   useEffect(() => {
-    if (!pet || !pet.id) return
+    if (!pet) return
 
     // Очищаем предыдущий таймаут
     if (saveTimeoutRef.current) {
@@ -25,9 +28,11 @@ export function useCoins() {
     // Сохраняем с задержкой
     saveTimeoutRef.current = setTimeout(async () => {
       try {
+        console.log('💾 Сохранение монет:', coins)
         await savePetStats({ coins })
+        console.log('✅ Монеты сохранены')
       } catch (error) {
-        console.error('Failed to save coins:', error)
+        console.error('❌ Ошибка сохранения монет:', error)
       }
     }, 500)
 
@@ -39,39 +44,16 @@ export function useCoins() {
   }, [coins, pet, savePetStats])
 
   const addCoins = useCallback((amount) => {
-    setCoins(prev => {
-      const newCoins = prev + amount
-      // Немедленно сохраняем при изменении монет
-      if (pet && pet.id) {
-        savePetStats({ coins: newCoins }).catch(err => {
-          console.error('Failed to save coins after add:', err)
-        })
-      }
-      return newCoins
-    })
-  }, [pet, savePetStats])
+    setCoins(prev => prev + amount)
+  }, [])
 
   const spendCoins = useCallback((amount) => {
-    setCoins(prev => {
-      const newCoins = Math.max(0, prev - amount)
-      // Немедленно сохраняем при изменении монет
-      if (pet && pet.id) {
-        savePetStats({ coins: newCoins }).catch(err => {
-          console.error('Failed to save coins after spend:', err)
-        })
-      }
-      return newCoins
-    })
-  }, [pet, savePetStats])
+    setCoins(prev => Math.max(0, prev - amount))
+  }, [])
 
   const resetCoins = useCallback(() => {
     setCoins(0)
-    if (pet && pet.id) {
-      savePetStats({ coins: 0 }).catch(err => {
-        console.error('Failed to reset coins in database:', err)
-      })
-    }
-  }, [pet, savePetStats])
+  }, [])
 
   return {
     coins,

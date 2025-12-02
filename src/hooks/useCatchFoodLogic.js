@@ -6,10 +6,7 @@ const SPEED_INCREASE = 0.25 // Reduced proportionally (was 0.5)
 const SPAWN_RATE_DECREASE = 100 // ms
 const INITIAL_LIVES = 3
 
-const STORAGE_KEY = 'catch_food_best_score'
-const COINS_STORAGE_KEY = 'tamagotchi_coins'
-
-export function useCatchFoodLogic({ isActive, onGameEnd, onCatch, onCoinsEarned }) {
+export function useCatchFoodLogic({ isActive, onGameEnd, onCatch, onCoinsEarned, initialBestScore = 0, onBestScoreUpdate }) {
   const [score, setScore] = useState(0)
   const [lives, setLives] = useState(INITIAL_LIVES)
   const [isGameRunning, setIsGameRunning] = useState(false)
@@ -26,15 +23,15 @@ export function useCatchFoodLogic({ isActive, onGameEnd, onCatch, onCoinsEarned 
   const dragStartXRef = useRef(0)
   const scoreRef = useRef(0)
 
-  // Load best score
-  const [bestScore, setBestScore] = useState(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY)
-      return saved ? parseInt(saved, 10) : 0
-    } catch {
-      return 0
+  // Load best score from initial value
+  const [bestScore, setBestScore] = useState(initialBestScore)
+  
+  // Обновляем best score при изменении initialBestScore
+  useEffect(() => {
+    if (initialBestScore > bestScore) {
+      setBestScore(initialBestScore)
     }
-  })
+  }, [initialBestScore])
 
   // Reset game state
   const resetGame = useCallback(() => {
@@ -215,13 +212,11 @@ export function useCatchFoodLogic({ isActive, onGameEnd, onCatch, onCoinsEarned 
               const finalScore = scoreRef.current
               setBestScore(prevBest => {
                 if (finalScore > prevBest) {
-                  try {
-                    localStorage.setItem(STORAGE_KEY, finalScore.toString())
-                    return finalScore
-                  } catch (error) {
-                    console.error('Failed to save best score:', error)
-                    return prevBest
+                  // Уведомляем родительский компонент о новом рекорде
+                  if (onBestScoreUpdate) {
+                    onBestScoreUpdate(finalScore)
                   }
+                  return finalScore
                 }
                 return prevBest
               })

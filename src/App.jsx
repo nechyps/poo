@@ -49,6 +49,7 @@ function App() {
 
   const handleLogout = () => {
     audio.playClickSound()
+    
     // Останавливаем музыку при выходе из игры (но не меняем настройку)
     if (audio.stopMusic) {
       audio.stopMusic()

@@ -37,23 +37,64 @@ export function useStats() {
   const lastUpdateRef = useRef(Date.now())
   const saveTimeoutRef = useRef(null)
 
+  const initializedRef = useRef(false)
+  const loadedPetRef = useRef(null)
+
   // Load stats from database when pet is loaded
   useEffect(() => {
     if (petLoading || !pet) return
+    
+    // Only initialize once to avoid race conditions with auto-saves
+    if (initializedRef.current) return
 
     try {
       const savedStats = {
-        hunger: pet.hunger || DEFAULT_STATS.hunger,
-        energy: pet.energy || DEFAULT_STATS.energy,
-        happiness: pet.happiness || DEFAULT_STATS.happiness,
-        cleanliness: pet.cleanliness || DEFAULT_STATS.cleanliness,
-        health: pet.health || DEFAULT_STATS.health
+        hunger: pet.hunger ?? DEFAULT_STATS.hunger,
+        energy: pet.energy ?? DEFAULT_STATS.energy,
+        happiness: pet.happiness ?? DEFAULT_STATS.happiness,
+        cleanliness: pet.cleanliness ?? DEFAULT_STATS.cleanliness,
+        health: pet.health ?? DEFAULT_STATS.health
       }
-      const savedLastUpdate = pet.last_updated || Date.now()
       
-      setStats(savedStats)
-      setLastUpdate(savedLastUpdate)
-      lastUpdateRef.current = savedLastUpdate
+      // Handle timestamp
+      let savedLastUpdate = pet.last_updated ? new Date(pet.last_updated).getTime() : Date.now()
+      
+      // Calculate offline decay
+      const now = Date.now()
+      const minutesPassed = (now - savedLastUpdate) / 60000
+      
+      if (minutesPassed > 1) {
+         console.log(`🕒 Прошло ${minutesPassed.toFixed(1)} минут пока вас не было. Применяем эффекты...`)
+         
+         const newStats = { ...savedStats }
+         
+         // Apply decay
+         Object.keys(DECAY_RATES).forEach(stat => {
+           if (stat !== 'health') {
+             const decay = DECAY_RATES[stat] * minutesPassed
+             newStats[stat] = Math.max(0, Math.min(100, newStats[stat] - decay))
+           }
+         })
+
+         // Health calculation
+         const avgStat = (newStats.hunger + newStats.energy + newStats.happiness + newStats.cleanliness) / 4
+         if (avgStat < 30) {
+           newStats.health = Math.max(0, newStats.health - (30 - avgStat) * 0.1 * minutesPassed)
+         } else if (avgStat > 70 && newStats.health < 100) {
+           newStats.health = Math.min(100, newStats.health + 0.5 * minutesPassed)
+         }
+         
+         setStats(newStats)
+         setLastUpdate(now)
+         lastUpdateRef.current = now
+      } else {
+         setStats(savedStats)
+         setLastUpdate(savedLastUpdate)
+         lastUpdateRef.current = savedLastUpdate
+      }
+      
+      initializedRef.current = true
+      loadedPetRef.current = pet
     } catch (error) {
       console.error('Failed to load stats from pet:', error)
       lastUpdateRef.current = Date.now()
@@ -62,7 +103,7 @@ export function useStats() {
 
   // Auto-save to database when stats change
   useEffect(() => {
-    if (petLoading || !pet || !pet.id) return
+    if (petLoading || !pet) return
 
     // Очищаем предыдущий таймаут
     if (saveTimeoutRef.current) {
@@ -72,9 +113,12 @@ export function useStats() {
     // Сохраняем с задержкой, чтобы не сохранять при каждом изменении
     saveTimeoutRef.current = setTimeout(async () => {
       try {
-        await savePetStats(stats)
+        const statsToSave = { ...stats, last_updated: Date.now() }
+        console.log('💾 Автосохранение статистики:', statsToSave)
+        await savePetStats(statsToSave)
+        console.log('✅ Статистика автосохранена')
       } catch (error) {
-        console.error('Failed to auto-save stats:', error)
+        console.error('❌ Ошибка автосохранения статистики:', error)
       }
     }, 1000) // Сохраняем через 1 секунду после последнего изменения
 
@@ -140,9 +184,11 @@ export function useStats() {
       setLastUpdate(now)
 
       // Немедленно сохраняем в БД при действии
-      if (pet && pet.id) {
-        savePetStats(newStats).catch(err => {
-          console.error('Failed to save stats after action:', err)
+      if (pet) {
+        const statsToSave = { ...newStats, last_updated: now }
+        console.log('💾 Сохранение после действия:', statsToSave)
+        savePetStats(statsToSave).catch(err => {
+          console.error('❌ Ошибка сохранения после действия:', err)
         })
       }
 
@@ -193,11 +239,13 @@ export function useStats() {
     lastUpdateRef.current = Date.now()
     
     // Сохраняем сброшенные статистики в БД
-    if (pet && pet.id) {
+    if (pet) {
       try {
-        await savePetStats(DEFAULT_STATS)
+        const statsToSave = { ...DEFAULT_STATS, last_updated: Date.now() }
+        console.log('💾 Сброс статистики:', statsToSave)
+        await savePetStats(statsToSave)
       } catch (error) {
-        console.error('Failed to reset stats in database:', error)
+        console.error('❌ Ошибка сброса статистики:', error)
       }
     }
   }, [pet, savePetStats])

@@ -89,7 +89,7 @@ function Game({ onLogout, audio }) {
   const { stats, performAction, getMood, getHealthLevel, isLoading: statsLoading, error: statsError } = useStats()
   const { currentImage, currentState, isAnimating, setMood, performAction: performCharacterAction, resetToNormal } = useCharacter()
   const { coins, addCoins, spendCoins } = useCoins()
-  const { manualSave, manualLoad, formatLastSaveTime, error: petError, isLoading: petLoading } = usePet()
+  const { manualSave, manualLoad, formatLastSaveTime, error: petError, isLoading: petLoading, savePetStats, pet } = usePet()
   const [saveMessage, setSaveMessage] = useState('')
 
   const showMessage = useCallback((text) => {
@@ -172,6 +172,31 @@ function Game({ onLogout, audio }) {
     setIsMenuOpen(false)
   }
 
+  // Обертка для onLogout с сохранением данных
+  const handleLogoutWithSave = async () => {
+    // Сохраняем данные перед выходом
+    if (pet && savePetStats) {
+      try {
+        console.log('💾 Сохранение данных перед выходом...')
+        await savePetStats({
+          hunger: stats.hunger,
+          happiness: stats.happiness,
+          energy: stats.energy,
+          cleanliness: stats.cleanliness,
+          health: stats.health,
+          coins: coins,
+          catchFoodBestScore: pet.catchFoodBestScore || 0,
+          clickFoodBestScore: pet.clickFoodBestScore || 0,
+        })
+        console.log('✅ Данные сохранены перед выходом')
+      } catch (err) {
+        console.error('❌ Ошибка сохранения при выходе:', err)
+      }
+    }
+    // Вызываем оригинальный onLogout
+    onLogout()
+  }
+
   const handleHouseClick = () => {
     audio.playClickSound()
     if (isMiniGameActive) {
@@ -229,10 +254,13 @@ function Game({ onLogout, audio }) {
     setSelectedFood(randomMeal)
     setIsFoodFlying(true)
     
-    // Perform character action
+    // Update stats immediately to ensure they are saved even if user exits
+    performAction('feed')
+    showMessage(MESSAGES.feed[Math.floor(Math.random() * MESSAGES.feed.length)])
+    
+    // Perform character animation
     performCharacterAction('feed', () => {
-      performAction('feed')
-      showMessage(MESSAGES.feed[Math.floor(Math.random() * MESSAGES.feed.length)])
+      // Animation complete
     })
     
     // Reset food after animation
@@ -248,9 +276,13 @@ function Game({ onLogout, audio }) {
     if (isAnimating) return
     
     audio.playClickSound()
+    
+    // Update stats immediately
+    performAction('clean')
+    showMessage(MESSAGES.clean[Math.floor(Math.random() * MESSAGES.clean.length)])
+    
     performCharacterAction('clean', () => {
-      performAction('clean')
-      showMessage(MESSAGES.clean[Math.floor(Math.random() * MESSAGES.clean.length)])
+      // Animation complete
     })
   }
 
@@ -264,10 +296,11 @@ function Game({ onLogout, audio }) {
     setIsNightMode(true)
     setBackgroundKey(prev => prev + 1) // Принудительное обновление изображения
     
+    // Update stats immediately
+    performAction('sleep')
+    showMessage(MESSAGES.sleep[Math.floor(Math.random() * MESSAGES.sleep.length)])
+    
     performCharacterAction('sleep', () => {
-      performAction('sleep')
-      showMessage(MESSAGES.sleep[Math.floor(Math.random() * MESSAGES.sleep.length)])
-      
       // Auto wake up after 5 seconds
       setTimeout(() => {
         setCurrentBackground(gameBackground)
@@ -339,7 +372,7 @@ function Game({ onLogout, audio }) {
             {isMenuOpen && (
               <Menu 
                 onClose={handleCloseMenu} 
-                onLogout={onLogout}
+                onLogout={handleLogoutWithSave}
                 isMusicOn={audio.isMusicOn}
                 isSfxOn={audio.isSfxOn}
                 musicVolume={audio.musicVolume}

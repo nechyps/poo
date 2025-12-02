@@ -1,5 +1,6 @@
 import { useRef, useEffect, useState } from 'react'
 import { useCatchFoodLogic } from '../../hooks/useCatchFoodLogic'
+import { usePet } from '../../hooks/usePetSupabase'
 import GameOverModal from './GameOverModal'
 import './CatchFoodGame.css'
 import candies from '../../assets/meal/candies.png'
@@ -20,6 +21,7 @@ const preloadedImages = FOOD_IMAGES.map(src => {
 })
 
 function CatchFoodGame({ isActive, onGameEnd, onCoinsEarned }) {
+  const { pet, savePetStats } = usePet()
   const canvasRef = useRef(null)
   const containerRef = useRef(null)
   const hasStartedRef = useRef(false)
@@ -31,6 +33,18 @@ function CatchFoodGame({ isActive, onGameEnd, onCoinsEarned }) {
   const jumpImgRef = useRef(new Image())
   eatImgRef.current.src = eatCharacter
   jumpImgRef.current.src = jumpCharacter
+
+  // Получаем начальный best score из pet
+  const initialBestScore = pet?.catchFoodBestScore || 0
+
+  // Обработчик обновления best score
+  const handleBestScoreUpdate = (newBestScore) => {
+    if (savePetStats && newBestScore > initialBestScore) {
+      savePetStats({ catchFoodBestScore: newBestScore }).catch(err => {
+        console.error('Failed to save best score:', err)
+      })
+    }
+  }
 
   const {
     score,
@@ -49,6 +63,8 @@ function CatchFoodGame({ isActive, onGameEnd, onCoinsEarned }) {
     handleTouchEnd
   } = useCatchFoodLogic({
     isActive: isActive && hasStartedRef.current,
+    initialBestScore: initialBestScore,
+    onBestScoreUpdate: handleBestScoreUpdate,
     onGameEnd: (finalScore) => {
       hasStartedRef.current = false
       setIsCatching(false)

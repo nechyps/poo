@@ -105,10 +105,15 @@ export function AuthProvider({ children }) {
       setLoading(true)
       setError(null)
       
-      // Формируем правильный redirect URL
-      // Важно: этот URL должен быть добавлен в Allow List в настройках Supabase (Authentication -> URL Configuration)
-      const redirectTo = window.location.origin
-      console.log('🔐 Начинаем вход через Google, redirectTo:', redirectTo)
+      // Формируем redirect URL на основе ТЕКУЩЕГО местоположения
+      // Это гарантирует, что после авторизации пользователь вернется на тот же домен
+      const currentUrl = window.location.href.split('#')[0] // Убираем hash если есть
+      const redirectTo = currentUrl
+      
+      console.log('🔐 Начинаем вход через Google')
+      console.log('📍 Текущий URL:', window.location.href)
+      console.log('📍 Redirect To:', redirectTo)
+      console.log('📍 Origin:', window.location.origin)
       
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
@@ -126,7 +131,7 @@ export function AuthProvider({ children }) {
         throw error
       }
       
-      console.log('✅ signInWithOAuth успешно, произойдет редирект')
+      console.log('✅ signInWithOAuth успешно, произойдет редирект на:', redirectTo)
       // Редирект произойдет автоматически, не сбрасываем loading здесь
       return { success: true, data }
     } catch (err) {

@@ -15,6 +15,8 @@ const DEFAULT_PET_DATA = {
   cleanliness: 80,
   health: 100,
   coins: 0,
+  catchFoodBestScore: 0,
+  clickFoodBestScore: 0,
 }
 
 /**
@@ -49,9 +51,11 @@ export function usePet() {
       if (!petData) {
         // Создаем нового питомца если сохранения нет
         petData = await createPet(userId, DEFAULT_PET_DATA)
-        console.log('Создан новый питомец для пользователя:', userId)
+        console.log('✅ Создан новый питомец для пользователя:', userId)
+        console.log('📊 Данные питомца:', petData)
       } else {
-        console.log('Загружен существующий питомец')
+        console.log('✅ Загружен существующий питомец')
+        console.log('📊 Данные питомца:', petData)
       }
 
       setPet(petData)
@@ -75,55 +79,82 @@ export function usePet() {
    * Сохранение статистики питомца в Supabase
    */
   const savePetStats = useCallback(async (newStats) => {
+    console.log('💾 savePetStats вызван:', { 
+      isAuthenticated, 
+      userId, 
+      hasPet: !!pet,
+      newStats 
+    })
+    
     if (!isAuthenticated || !userId) {
+      console.warn('⚠️ Пользователь не авторизован, сохранение только в памяти')
       // Если не авторизован, только обновляем локальное состояние
       setPet(prev => ({
-        ...prev,
+        ...(prev || DEFAULT_PET_DATA),
         ...newStats,
       }))
       return false
     }
 
-    // Используем функциональное обновление, чтобы получить актуальный стейт
-    let updatedPet = null
-    setPet(prev => {
-      if (!prev) return prev
-      updatedPet = { ...prev, ...newStats }
-      return updatedPet
-    })
-
-    // Если пет не был загружен, мы не можем сохранить
-    if (!updatedPet) {
-       // Попробуем взять newStats как основу, если это инициализация? 
-       // Нет, лучше подождать загрузки.
-       console.warn('Питомец не загружен, пропускаем сохранение')
-       return false
-    }
-
     try {
-      // Отправляем полный объект, чтобы избежать гонки чтения в БД
-      // Мы считаем, что локальный стейт - самый актуальный
+      // Если pet еще не загружен, используем updatePetStats который сам получит данные из БД
+      if (!pet) {
+        console.log('⚠️ Pet еще не загружен, используем updatePetStats для получения данных из БД')
+        const updatedData = await updatePetStats(userId, newStats)
+        setPet(updatedData)
+        setLastSaveTime(Date.now())
+        console.log('✅ Статистика сохранена через updatePetStats:', updatedData)
+        return true
+      }
+
+      // Pet загружен - используем локальное состояние и мержим с новыми данными
+      const updatedPet = { ...pet, ...newStats }
+      console.log('💾 Мержим данные:')
+      console.log('  - Текущий pet:', pet)
+      console.log('  - Новые данные:', newStats)
+      console.log('  - Результат мержа:', updatedPet)
+      
+      // Обновляем локальное состояние оптимистично
+      setPet(updatedPet)
+      
+      // Отправляем полный объект в БД
+      console.log('📤 Отправка в Supabase...')
       const savedData = await savePetSave(userId, updatedPet)
       
       // Обновляем стейт подтвержденными данными из БД
       setPet(savedData)
       setLastSaveTime(Date.now())
       console.log('✅ Статистика питомца успешно сохранена в облако')
+      console.log('📊 Подтвержденные данные из БД:', savedData)
       return true
     } catch (err) {
       console.error('❌ Ошибка сохранения статистики питомца:', err)
-      // Локальный стейт мы уже обновили оптимистично, так что пользователь не заметит лага.
-      // Но надо показать ошибку.
+      console.error('❌ Детали ошибки:', {
+        message: err.message,
+        code: err.code,
+        details: err.details,
+        hint: err.hint,
+        stack: err.stack
+      })
+      // При ошибке обновляем локальное состояние хотя бы
+      setPet(prev => ({
+        ...(prev || DEFAULT_PET_DATA),
+        ...newStats,
+      }))
       setError(err.message)
       return false
     }
-  }, [userId, isAuthenticated])
+  }, [pet, userId, isAuthenticated])
 
   /**
    * Ручное сохранение
    */
   const manualSave = useCallback(async () => {
+    console.log('💾 Ручное сохранение запущено')
+    console.log('📊 Состояние:', { isAuthenticated, userId, pet: !!pet })
+    
     if (!isAuthenticated || !userId) {
+      console.warn('⚠️ Пользователь не авторизован, сохранение невозможно')
       return { 
         success: false, 
         message: 'Войдите в систему для сохранения игры' 
@@ -131,41 +162,67 @@ export function usePet() {
     }
 
     if (!pet) {
-      return { success: false, message: 'Питомец не загружен' }
+      console.warn('⚠️ Pet не загружен, пытаемся загрузить...')
+      // Попробуем загрузить pet перед сохранением
+      try {
+        await loadPet()
+        // Подождем немного для загрузки
+        await new Promise(resolve => setTimeout(resolve, 500))
+        if (!pet) {
+          return { success: false, message: 'Питомец не загружен. Попробуйте перезагрузить страницу.' }
+        }
+      } catch (err) {
+        console.error('❌ Ошибка загрузки pet:', err)
+        return { success: false, message: 'Не удалось загрузить данные питомца' }
+      }
     }
 
     try {
-      const stats = {
-        hunger: pet.hunger,
-        happiness: pet.happiness,
-        energy: pet.energy,
-        cleanliness: pet.cleanliness,
-        health: pet.health,
-        coins: pet.coins,
+      // Сохраняем ВСЕ данные питомца, включая best scores
+      const fullPetData = {
+        name: pet.name || 'Tamagotchi',
+        hunger: pet.hunger ?? 80,
+        happiness: pet.happiness ?? 80,
+        energy: pet.energy ?? 80,
+        cleanliness: pet.cleanliness ?? 80,
+        health: pet.health ?? 100,
+        coins: pet.coins ?? 0,
+        catchFoodBestScore: pet.catchFoodBestScore ?? 0,
+        clickFoodBestScore: pet.clickFoodBestScore ?? 0,
+        last_updated: Date.now(),
       }
 
-      const success = await savePetStats(stats)
+      console.log('💾 Сохраняем полные данные питомца:', fullPetData)
+      const success = await savePetStats(fullPetData)
       
       if (success) {
+        console.log('✅ Ручное сохранение успешно')
         return { 
           success: true, 
           message: 'Игра сохранена!',
-          lastSaveTime: lastSaveTime
+          lastSaveTime: Date.now()
         }
       } else {
+        console.error('❌ savePetStats вернул false')
         return { 
           success: false, 
-          message: 'Не удалось сохранить игру. Попробуйте еще раз.' 
+          message: 'Не удалось сохранить игру. Проверьте консоль на ошибки.' 
         }
       }
     } catch (err) {
-      console.error('Ошибка ручного сохранения:', err)
+      console.error('❌ Ошибка ручного сохранения:', err)
+      console.error('❌ Детали ошибки:', {
+        message: err.message,
+        code: err.code,
+        details: err.details,
+        hint: err.hint
+      })
       return { 
         success: false, 
-        message: err.message || 'Не удалось сохранить игру' 
+        message: `Ошибка сохранения: ${err.message || 'Неизвестная ошибка'}` 
       }
     }
-  }, [pet, userId, isAuthenticated, savePetStats, lastSaveTime])
+  }, [pet, userId, isAuthenticated, savePetStats, loadPet])
 
   /**
    * Ручная загрузка
