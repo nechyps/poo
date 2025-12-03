@@ -40,9 +40,13 @@ function CatchFoodGame({ isActive, onGameEnd, onCoinsEarned }) {
   // Обработчик обновления best score
   const handleBestScoreUpdate = (newBestScore) => {
     if (savePetStats && newBestScore > initialBestScore) {
-      savePetStats({ catchFoodBestScore: newBestScore }).catch(err => {
-        console.error('Failed to save best score:', err)
-      })
+      // Используем текущее значение из pet, а не initialBestScore, чтобы всегда сохранять максимальный рекорд
+      const currentBest = pet?.catchFoodBestScore || 0
+      if (newBestScore > currentBest) {
+        savePetStats({ catchFoodBestScore: newBestScore }).catch(err => {
+          console.error('Failed to save best score:', err)
+        })
+      }
     }
   }
 

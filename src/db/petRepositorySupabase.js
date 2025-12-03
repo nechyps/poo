@@ -70,17 +70,38 @@ export async function savePetSave(userId, petData) {
       throw new Error('Pet data is required')
     }
 
-    // Валидация данных
+    // Проверяем, существует ли запись и получаем текущие данные
+    const { data: existingData, error: checkError } = await supabase
+      .from('pet_saves')
+      .select('pet_data, user_id')
+      .eq('user_id', userId)
+      .maybeSingle()
+    
+    if (checkError && checkError.code !== 'PGRST116') {
+      throw checkError
+    }
+    
+    // Если запись существует, мержим с существующими данными для сохранения рекордов
+    const existingPetData = existingData?.pet_data || {}
+    
+    // Валидация данных с сохранением существующих рекордов
     const validatedData = {
-      name: petData.name || 'Tamagotchi',
-      hunger: Math.max(0, Math.min(100, petData.hunger ?? 80)),
-      happiness: Math.max(0, Math.min(100, petData.happiness ?? 80)),
-      energy: Math.max(0, Math.min(100, petData.energy ?? 80)),
-      cleanliness: Math.max(0, Math.min(100, petData.cleanliness ?? 80)),
-      health: Math.max(0, Math.min(100, petData.health ?? 100)),
-      coins: Math.max(0, petData.coins ?? 0),
-      catchFoodBestScore: Math.max(0, petData.catchFoodBestScore ?? 0),
-      clickFoodBestScore: Math.max(0, petData.clickFoodBestScore ?? 0),
+      name: petData.name || existingPetData.name || 'Tamagotchi',
+      hunger: petData.hunger !== undefined ? Math.max(0, Math.min(100, petData.hunger)) : (existingPetData.hunger ?? 80),
+      happiness: petData.happiness !== undefined ? Math.max(0, Math.min(100, petData.happiness)) : (existingPetData.happiness ?? 80),
+      energy: petData.energy !== undefined ? Math.max(0, Math.min(100, petData.energy)) : (existingPetData.energy ?? 80),
+      cleanliness: petData.cleanliness !== undefined ? Math.max(0, Math.min(100, petData.cleanliness)) : (existingPetData.cleanliness ?? 80),
+      health: petData.health !== undefined ? Math.max(0, Math.min(100, petData.health)) : (existingPetData.health ?? 100),
+      coins: petData.coins !== undefined ? Math.max(0, petData.coins) : (existingPetData.coins ?? 0),
+      // Рекорды: сохраняем максимальное значение между новым и существующим
+      catchFoodBestScore: Math.max(
+        petData.catchFoodBestScore !== undefined ? Math.max(0, petData.catchFoodBestScore) : 0,
+        existingPetData.catchFoodBestScore || 0
+      ),
+      clickFoodBestScore: Math.max(
+        petData.clickFoodBestScore !== undefined ? Math.max(0, petData.clickFoodBestScore) : 0,
+        existingPetData.clickFoodBestScore || 0
+      ),
       last_updated: petData.last_updated || Date.now(),
     }
 
@@ -89,17 +110,6 @@ export async function savePetSave(userId, petData) {
       user_id: userId,
       pet_data: validatedData,
       updated_at: new Date().toISOString(),
-    }
-    
-    // Проверяем, существует ли запись
-    const { data: existingData, error: checkError } = await supabase
-      .from('pet_saves')
-      .select('user_id')
-      .eq('user_id', userId)
-      .maybeSingle()
-    
-    if (checkError && checkError.code !== 'PGRST116') {
-      throw checkError
     }
     
     let result
