@@ -102,11 +102,20 @@ export function usePet() {
       // Pet загружен - используем локальное состояние и мержим с новыми данными
       const updatedPet = { ...pet, ...newStats }
       
+      console.error('💾 savePetStats - обновление питомца:', {
+        userId,
+        currentPet: pet,
+        newStats,
+        updatedPet
+      })
+      
       // Обновляем локальное состояние оптимистично
       setPet(updatedPet)
       
       // Отправляем полный объект в БД
       const savedData = await savePetSave(userId, updatedPet)
+      
+      console.error('✅ savePetStats - данные сохранены:', savedData)
       
       // Обновляем стейт подтвержденными данными из БД
       setPet(savedData)

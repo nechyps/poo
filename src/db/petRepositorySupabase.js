@@ -91,16 +91,48 @@ export async function savePetSave(userId, petData) {
       updated_at: new Date().toISOString(),
     }
     
-    const { data, error } = await supabase
+    console.error('💾 Отправка данных в Supabase:', {
+      userId,
+      petData: validatedData,
+      upsertData
+    })
+    
+    // Проверяем, существует ли запись
+    const { data: existingData, error: checkError } = await supabase
       .from('pet_saves')
-      .upsert(
-        upsertData,
-        {
-          onConflict: 'user_id',
-        }
-      )
-      .select('pet_data, updated_at, user_id')
-      .single()
+      .select('user_id')
+      .eq('user_id', userId)
+      .maybeSingle()
+    
+    if (checkError && checkError.code !== 'PGRST116') {
+      console.error('❌ Ошибка при проверке существования записи:', checkError)
+      throw checkError
+    }
+    
+    let result
+    if (existingData) {
+      // Обновляем существующую запись
+      console.error('💾 Обновление существующей записи для user_id:', userId)
+      result = await supabase
+        .from('pet_saves')
+        .update({
+          pet_data: validatedData,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('user_id', userId)
+        .select('pet_data, updated_at, user_id')
+        .single()
+    } else {
+      // Создаем новую запись
+      console.error('💾 Создание новой записи для user_id:', userId)
+      result = await supabase
+        .from('pet_saves')
+        .insert(upsertData)
+        .select('pet_data, updated_at, user_id')
+        .single()
+    }
+    
+    const { data, error } = result
 
     if (error) {
       console.error('❌ Ошибка Supabase при сохранении:')
@@ -108,10 +140,14 @@ export async function savePetSave(userId, petData) {
       console.error('  - Сообщение:', error.message)
       console.error('  - Детали:', error.details)
       console.error('  - Подсказка:', error.hint)
+      console.error('  - Полный ответ:', { data, error })
       throw error
     }
     
+    console.error('✅ Данные успешно сохранены в Supabase:', data)
+    
     if (!data || !data.pet_data) {
+      console.error('❌ Сервер вернул пустые данные:', data)
       throw new Error('Сервер вернул пустые данные')
     }
 
