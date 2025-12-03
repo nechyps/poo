@@ -63,7 +63,6 @@ function ClickFoodGame({ isActive, onGameEnd, onCoinsEarned, onCoinsSpend }) {
       // Проверяем, что это действительно новый рекорд
       const currentBest = pet.clickFoodBestScore || 0
       if (bestScore > currentBest) {
-        console.log('💾 Сохранение нового рекорда Click Food:', bestScore)
         savePetStats({ clickFoodBestScore: bestScore }).catch(err => {
           console.error('❌ Ошибка сохранения рекорда:', err)
         })

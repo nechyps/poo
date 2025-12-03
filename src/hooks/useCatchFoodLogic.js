@@ -111,7 +111,7 @@ export function useCatchFoodLogic({ isActive, onGameEnd, onCatch, onCoinsEarned,
 
     setFoods(prevFoods => {
       const newFoods = []
-      let caught = false
+      const caughtFoods = []
 
       for (const food of prevFoods) {
         const foodLeft = food.x - 3
@@ -126,23 +126,31 @@ export function useCatchFoodLogic({ isActive, onGameEnd, onCatch, onCoinsEarned,
           foodLeft < playerRight &&
           foodRight > playerLeft
         ) {
-          caught = true
-          setScore(prev => {
-            const newScore = prev + 1
-            scoreRef.current = newScore
-            return newScore
-          })
-          // Earn coin for catching food
-          if (onCoinsEarned) {
-            onCoinsEarned(1)
-          }
-          // Trigger catch callback
-          if (onCatch) {
-            onCatch()
-          }
+          caughtFoods.push(food)
         } else if (food.y < 100) {
           newFoods.push(food)
         }
+      }
+
+      // Process caught foods after state update
+      if (caughtFoods.length > 0) {
+        const coinsToEarn = caughtFoods.length
+        
+        // Use setTimeout to defer state updates and callbacks to avoid render warnings
+        setTimeout(() => {
+          setScore(prev => {
+            const newScore = prev + coinsToEarn
+            scoreRef.current = newScore
+            return newScore
+          })
+          
+          if (onCoinsEarned) {
+            onCoinsEarned(coinsToEarn)
+          }
+          if (onCatch) {
+            onCatch()
+          }
+        }, 0)
       }
 
       return newFoods

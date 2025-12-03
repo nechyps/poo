@@ -20,8 +20,6 @@ export function AuthProvider({ children }) {
     // 1. Инициализация
     const initializeAuth = async () => {
       try {
-        console.log('🔍 Auth Init: Проверка сессии...')
-        
         // ПРОВЕРКА ХЕША ВРУЧНУЮ (фикс для localhost)
         // Иногда Supabase auto-detect не срабатывает корректно при редиректах
         const hashParams = new URLSearchParams(window.location.hash.substring(1))
@@ -29,7 +27,6 @@ export function AuthProvider({ children }) {
         const refreshToken = hashParams.get('refresh_token')
         
         if (accessToken && refreshToken) {
-           console.log('🔐 Нашел токены в URL вручную, устанавливаю сессию...')
            const { data, error } = await supabase.auth.setSession({
              access_token: accessToken,
              refresh_token: refreshToken
@@ -38,7 +35,6 @@ export function AuthProvider({ children }) {
            if (error) {
              console.error('❌ Ошибка ручной установки сессии:', error)
            } else if (data.session) {
-             console.log('✅ Сессия установлена вручную:', data.session.user.email)
              if (mounted) {
                 setSession(data.session)
                 setUser(data.session.user)
@@ -54,13 +50,10 @@ export function AuthProvider({ children }) {
            if (error) {
              console.error('❌ Ошибка получения сессии:', error)
            } else if (session) {
-             console.log('✅ Сессия найдена (из хранилища):', session.user.email)
              if (mounted) {
                setSession(session)
                setUser(session.user)
              }
-           } else {
-             console.log('ℹ️ Сессии нет')
            }
         }
 
@@ -77,8 +70,6 @@ export function AuthProvider({ children }) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log('🔐 Auth event:', event)
-      
       if (!mounted) return
 
       if (session) {
@@ -110,11 +101,6 @@ export function AuthProvider({ children }) {
       const currentUrl = window.location.href.split('#')[0] // Убираем hash если есть
       const redirectTo = currentUrl
       
-      console.log('🔐 Начинаем вход через Google')
-      console.log('📍 Текущий URL:', window.location.href)
-      console.log('📍 Redirect To:', redirectTo)
-      console.log('📍 Origin:', window.location.origin)
-      
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
@@ -131,7 +117,6 @@ export function AuthProvider({ children }) {
         throw error
       }
       
-      console.log('✅ signInWithOAuth успешно, произойдет редирект на:', redirectTo)
       // Редирект произойдет автоматически, не сбрасываем loading здесь
       return { success: true, data }
     } catch (err) {
@@ -179,16 +164,6 @@ export function AuthProvider({ children }) {
     userAvatar: user?.user_metadata?.avatar_url,
   }
   
-  // Отладка: логируем изменения состояния
-  useEffect(() => {
-    console.log('🔐 AuthContext state:', {
-      user: user?.email || 'null',
-      isAuthenticated: !!user,
-      loading,
-      hasSession: !!session
-    })
-  }, [user, session, loading])
-
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
 

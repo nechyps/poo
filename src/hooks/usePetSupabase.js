@@ -3,7 +3,7 @@
  * Полностью заменяет локальную БД на облачное хранилище
  */
 
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { getPetSave, savePetSave, updatePetStats, createPet } from '../db/petRepositorySupabase'
 
@@ -29,7 +29,6 @@ export function usePet() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
   const [lastSaveTime, setLastSaveTime] = useState(null)
-  const autoSaveTimeoutRef = useRef(null)
 
   /**
    * Загрузка питомца из Supabase
@@ -51,11 +50,6 @@ export function usePet() {
       if (!petData) {
         // Создаем нового питомца если сохранения нет
         petData = await createPet(userId, DEFAULT_PET_DATA)
-        console.log('✅ Создан новый питомец для пользователя:', userId)
-        console.log('📊 Данные питомца:', petData)
-      } else {
-        console.log('✅ Загружен существующий питомец')
-        console.log('📊 Данные питомца:', petData)
       }
 
       setPet(petData)
@@ -79,13 +73,6 @@ export function usePet() {
    * Сохранение статистики питомца в Supabase
    */
   const savePetStats = useCallback(async (newStats) => {
-    console.log('💾 savePetStats вызван:', { 
-      isAuthenticated, 
-      userId, 
-      hasPet: !!pet,
-      newStats 
-    })
-    
     if (!isAuthenticated || !userId) {
       console.warn('⚠️ Пользователь не авторизован, сохранение только в памяти')
       // Если не авторизован, только обновляем локальное состояние
@@ -99,33 +86,24 @@ export function usePet() {
     try {
       // Если pet еще не загружен, используем updatePetStats который сам получит данные из БД
       if (!pet) {
-        console.log('⚠️ Pet еще не загружен, используем updatePetStats для получения данных из БД')
         const updatedData = await updatePetStats(userId, newStats)
         setPet(updatedData)
         setLastSaveTime(Date.now())
-        console.log('✅ Статистика сохранена через updatePetStats:', updatedData)
         return true
       }
 
       // Pet загружен - используем локальное состояние и мержим с новыми данными
       const updatedPet = { ...pet, ...newStats }
-      console.log('💾 Мержим данные:')
-      console.log('  - Текущий pet:', pet)
-      console.log('  - Новые данные:', newStats)
-      console.log('  - Результат мержа:', updatedPet)
       
       // Обновляем локальное состояние оптимистично
       setPet(updatedPet)
       
       // Отправляем полный объект в БД
-      console.log('📤 Отправка в Supabase...')
       const savedData = await savePetSave(userId, updatedPet)
       
       // Обновляем стейт подтвержденными данными из БД
       setPet(savedData)
       setLastSaveTime(Date.now())
-      console.log('✅ Статистика питомца успешно сохранена в облако')
-      console.log('📊 Подтвержденные данные из БД:', savedData)
       return true
     } catch (err) {
       console.error('❌ Ошибка сохранения статистики питомца:', err)
@@ -150,9 +128,6 @@ export function usePet() {
    * Ручное сохранение
    */
   const manualSave = useCallback(async () => {
-    console.log('💾 Ручное сохранение запущено')
-    console.log('📊 Состояние:', { isAuthenticated, userId, pet: !!pet })
-    
     if (!isAuthenticated || !userId) {
       console.warn('⚠️ Пользователь не авторизован, сохранение невозможно')
       return { 
@@ -192,11 +167,9 @@ export function usePet() {
         last_updated: Date.now(),
       }
 
-      console.log('💾 Сохраняем полные данные питомца:', fullPetData)
       const success = await savePetStats(fullPetData)
       
       if (success) {
-        console.log('✅ Ручное сохранение успешно')
         return { 
           success: true, 
           message: 'Игра сохранена!',

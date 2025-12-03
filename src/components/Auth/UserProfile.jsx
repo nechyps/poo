@@ -8,11 +8,7 @@ import './UserProfile.css'
 export function UserProfile() {
   const { user, userName, userAvatar, signOut, loading, isAuthenticated } = useAuth()
 
-  // Отладка
-  console.log('👤 UserProfile render - user:', user?.email || 'null', 'isAuthenticated:', isAuthenticated)
-
   if (!user) {
-    console.log('👤 UserProfile: user is null, не отображаем профиль')
     return null
   }
 

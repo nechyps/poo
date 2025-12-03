@@ -64,8 +64,6 @@ export function useStats() {
       const minutesPassed = (now - savedLastUpdate) / 60000
       
       if (minutesPassed > 1) {
-         console.log(`🕒 Прошло ${minutesPassed.toFixed(1)} минут пока вас не было. Применяем эффекты...`)
-         
          const newStats = { ...savedStats }
          
          // Apply decay
@@ -114,9 +112,7 @@ export function useStats() {
     saveTimeoutRef.current = setTimeout(async () => {
       try {
         const statsToSave = { ...stats, last_updated: Date.now() }
-        console.log('💾 Автосохранение статистики:', statsToSave)
         await savePetStats(statsToSave)
-        console.log('✅ Статистика автосохранена')
       } catch (error) {
         console.error('❌ Ошибка автосохранения статистики:', error)
       }
@@ -186,7 +182,6 @@ export function useStats() {
       // Немедленно сохраняем в БД при действии
       if (pet) {
         const statsToSave = { ...newStats, last_updated: now }
-        console.log('💾 Сохранение после действия:', statsToSave)
         savePetStats(statsToSave).catch(err => {
           console.error('❌ Ошибка сохранения после действия:', err)
         })
@@ -242,7 +237,6 @@ export function useStats() {
     if (pet) {
       try {
         const statsToSave = { ...DEFAULT_STATS, last_updated: Date.now() }
-        console.log('💾 Сброс статистики:', statsToSave)
         await savePetStats(statsToSave)
       } catch (error) {
         console.error('❌ Ошибка сброса статистики:', error)

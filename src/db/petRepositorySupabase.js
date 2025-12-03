@@ -82,17 +82,11 @@ export async function savePetSave(userId, petData) {
     }
 
     // Используем upsert для создания или обновления
-    console.log('💾 Сохранение в Supabase:')
-    console.log('  - userId:', userId)
-    console.log('  - pet_data:', validatedData)
-    
     const upsertData = {
       user_id: userId,
       pet_data: validatedData,
       updated_at: new Date().toISOString(),
     }
-    
-    console.log('  - Отправляем данные:', upsertData)
     
     const { data, error } = await supabase
       .from('pet_saves')
@@ -113,9 +107,6 @@ export async function savePetSave(userId, petData) {
       console.error('  - Подсказка:', error.hint)
       throw error
     }
-
-    console.log('✅ Данные успешно сохранены в Supabase')
-    console.log('  - Ответ от БД:', data)
     
     if (!data || !data.pet_data) {
       throw new Error('Сервер вернул пустые данные')

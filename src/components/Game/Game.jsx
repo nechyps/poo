@@ -177,7 +177,6 @@ function Game({ onLogout, audio }) {
     // Сохраняем данные перед выходом
     if (pet && savePetStats) {
       try {
-        console.log('💾 Сохранение данных перед выходом...')
         await savePetStats({
           hunger: stats.hunger,
           happiness: stats.happiness,
@@ -188,7 +187,6 @@ function Game({ onLogout, audio }) {
           catchFoodBestScore: pet.catchFoodBestScore || 0,
           clickFoodBestScore: pet.clickFoodBestScore || 0,
         })
-        console.log('✅ Данные сохранены перед выходом')
       } catch (err) {
         console.error('❌ Ошибка сохранения при выходе:', err)
       }

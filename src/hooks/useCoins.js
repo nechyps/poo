@@ -28,9 +28,7 @@ export function useCoins() {
     // Сохраняем с задержкой
     saveTimeoutRef.current = setTimeout(async () => {
       try {
-        console.log('💾 Сохранение монет:', coins)
         await savePetStats({ coins })
-        console.log('✅ Монеты сохранены')
       } catch (error) {
         console.error('❌ Ошибка сохранения монет:', error)
       }

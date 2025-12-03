@@ -24,12 +24,6 @@ function Menu({
 }) {
   const { user, isAuthenticated, loading, session } = useAuth()
 
-  // Отладка: проверяем состояние авторизации
-  useEffect(() => {
-    console.log('📋 Menu - user:', user?.email || 'null', 'isAuthenticated:', isAuthenticated, 'loading:', loading, 'session:', !!session)
-    console.log('📋 Menu - user object:', user)
-  }, [user, isAuthenticated, loading, session])
-
   const withClick = (callback) => () => {
     playClickSound?.()
     callback?.()

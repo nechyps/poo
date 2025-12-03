@@ -87,9 +87,7 @@ export function useAudio() {
       if (isMusicOn) {
         // Если музыка включена, запускаем её (если ещё не играет)
         if (globalMusicAudio.paused) {
-          globalMusicAudio.play().catch(error => {
-            console.log('Music play prevented:', error)
-          })
+          globalMusicAudio.play().catch(() => {})
         }
       } else {
         // Если музыка выключена, останавливаем её
@@ -104,9 +102,7 @@ export function useAudio() {
       const audioClone = globalClickAudio.cloneNode()
       audioClone.volume = sfxVolume
       audioClone.currentTime = 0
-      audioClone.play().catch(error => {
-        console.log('Click sound prevented:', error)
-      })
+      audioClone.play().catch(() => {})
     }
   }
 
@@ -120,9 +116,7 @@ export function useAudio() {
 
   const startMusic = () => {
     if (globalMusicAudio && isMusicOn) {
-      globalMusicAudio.play().catch(error => {
-        console.log('Music start prevented:', error)
-      })
+      globalMusicAudio.play().catch(() => {})
     }
   }
 
