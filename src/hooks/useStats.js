@@ -204,14 +204,14 @@ export function useStats() {
     // Angry if any stat is very low
     if (hunger < 20 || happiness < 20 || cleanliness < 20) return 'angry'
     
-    // Tired if energy is low
-    if (energy < 40) return 'tired'
+    // Tired if energy is low (но не слишком низкий порог, чтобы не быть всегда усталым)
+    if (energy < 30) return 'tired'
     
     // Happy if all stats are good
     const avgStat = (hunger + energy + happiness + cleanliness) / 4
     if (avgStat > 70 && health > 80) return 'happy'
     
-    // Normal otherwise
+    // Normal otherwise (энергия >= 30, но не все статистики достаточно высокие для happy)
     return 'normal'
   }, [stats])
 

@@ -29,7 +29,9 @@ export function useCharacter() {
 
   // Set character state (mood)
   const setMood = useCallback((mood) => {
-    if (!isAnimating) {
+    // Обновляем настроение всегда, даже во время анимации (но не перезаписываем специальные состояния анимации)
+    // Если идет анимация и это не специальное состояние (eating, jumping, sleeping), обновляем настроение
+    if (!isAnimating || (mood !== 'eating' && mood !== 'jumping' && mood !== 'sleeping')) {
       setCurrentState(mood)
     }
   }, [isAnimating])
@@ -84,8 +86,8 @@ export function useCharacter() {
 
   // Reset to normal state
   const resetToNormal = useCallback(() => {
-    setCurrentState('normal')
     setIsAnimating(false)
+    // Не устанавливаем состояние в 'normal' здесь, пусть setMood обновит его на основе статистики
   }, [])
 
   return {

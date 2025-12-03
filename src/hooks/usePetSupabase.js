@@ -1,6 +1,10 @@
 /**
  * Хук для работы с питомцем через Supabase
  * Полностью заменяет локальную БД на облачное хранилище
+ * 
+ * ВАЖНО: Питомец привязан к user_id из Google OAuth, а не к session_id
+ * Это означает, что один пользователь всегда будет иметь одного и того же питомца,
+ * независимо от сессии или устройства
  */
 
 import { useState, useEffect, useCallback } from 'react'
@@ -32,10 +36,12 @@ export function usePet() {
 
   /**
    * Загрузка питомца из Supabase
+   * Питомец загружается по user_id из Google OAuth
    */
   const loadPet = useCallback(async () => {
     if (!isAuthenticated || !userId) {
       // Если пользователь не авторизован, используем временное состояние
+      // Питомец не будет сохранен без user_id
       setPet(DEFAULT_PET_DATA)
       setIsLoading(false)
       return
@@ -45,6 +51,7 @@ export function usePet() {
       setIsLoading(true)
       setError(null)
 
+      // Загружаем питомца по user_id из Google OAuth
       let petData = await getPetSave(userId)
 
       if (!petData) {

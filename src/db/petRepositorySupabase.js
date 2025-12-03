@@ -21,7 +21,8 @@ import { supabase } from './supabaseClient'
 
 /**
  * Получение сохранения питомца для пользователя
- * @param {string} userId - ID пользователя
+ * Питомец привязан к user_id из Google OAuth (auth.users.id), а не к session_id
+ * @param {string} userId - ID пользователя из Google OAuth (user.id из AuthContext)
  * @returns {Promise<PetData|null>} Данные питомца или null
  */
 export async function getPetSave(userId) {
@@ -30,6 +31,7 @@ export async function getPetSave(userId) {
       throw new Error('User ID is required')
     }
 
+    // Получаем питомца по user_id из Google OAuth
     const { data, error } = await supabase
       .from('pet_saves')
       .select('pet_data, updated_at, created_at')
@@ -53,7 +55,8 @@ export async function getPetSave(userId) {
 
 /**
  * Сохранение или обновление данных питомца
- * @param {string} userId - ID пользователя
+ * Питомец привязан к user_id из Google OAuth, а не к session_id
+ * @param {string} userId - ID пользователя из Google OAuth (user.id из AuthContext)
  * @param {PetData} petData - Данные питомца
  * @returns {Promise<PetData>} Сохраненные данные
  */

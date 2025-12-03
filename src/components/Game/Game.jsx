@@ -209,6 +209,9 @@ function Game({ onLogout, audio }) {
     setIsNightMode(false)
     setBackgroundKey(prev => prev + 1) // Принудительное обновление изображения
     resetToNormal()
+    // Обновляем настроение на основе текущей статистики
+    const mood = getMood()
+    setMood(mood)
   }
 
   const handlePlayButtonClick = () => {
@@ -305,6 +308,9 @@ function Game({ onLogout, audio }) {
         setIsNightMode(false)
         setBackgroundKey(prev => prev + 1) // Принудительное обновление изображения
         resetToNormal()
+        // Обновляем настроение на основе текущей статистики после пробуждения
+        const mood = getMood()
+        setMood(mood)
       }, 5000)
     })
   }
